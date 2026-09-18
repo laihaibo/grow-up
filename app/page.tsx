@@ -89,8 +89,8 @@ export default function TodayPage() {
       )}
 
       <div className="section-title">
-        <h2>今日活动</h2>
-        <span className="hint">含步骤 + 家长话术 · 圆圈打卡</span>
+        <h2>今日跟练</h2>
+        <span className="hint">准备 · 话术 · 观察点 · 降级</span>
       </div>
 
       <div className="cards">
@@ -120,10 +120,23 @@ export default function TodayPage() {
                 没有“男孩游戏 / 女孩游戏”。运动、搭建、科学、故事、创作、当队长——想试哪个就试哪个。
                 今天可以试：{plan.choice.hint}
               </p>
-              <ul className="card-steps" style={{ display: 'flex' }}>
-                <li>问：“你今天最想玩哪一种？”</li>
-                <li>让她先选方向，家长只配合不改主意</li>
-                <li>过程中问：“你发现了什么？”而不是教标准答案</li>
+              <ul className="card-steps always" style={{ display: 'flex' }}>
+                <li style={{ counterIncrement: 'none' }}>
+                  <strong style={{ color: 'var(--pink-deep)' }}>跟练</strong>
+                  问：「你今天最想玩哪一种？」
+                </li>
+                <li style={{ counterIncrement: 'none' }}>
+                  <strong style={{ color: 'var(--pink-deep)' }}>跟练</strong>
+                  让她先选方向，家长只配合不改主意。
+                </li>
+                <li style={{ counterIncrement: 'none' }}>
+                  <strong style={{ color: 'var(--pink-deep)' }}>跟练</strong>
+                  过程中问「你发现了什么？」，不教标准答案。
+                </li>
+                <li style={{ counterIncrement: 'none' }}>
+                  <strong style={{ color: 'var(--pink-deep)' }}>不想做时</strong>
+                  缩短到 5 分钟，或改成她点名你配合的游戏。
+                </li>
               </ul>
             </div>
           </div>
@@ -148,7 +161,6 @@ export default function TodayPage() {
 function ActivityCard({
   slot,
   done,
-  open,
   onOpen,
   onToggle,
 }: {
@@ -159,13 +171,17 @@ function ActivityCard({
   onToggle: () => void
 }) {
   const meta = DOMAIN_META[slot.domain]
-  const focusChips = slot.focus.slice(0, 4).map((f) => FOCUS_META[f])
   const hasPriority = slot.focus.some((f) => (PRIORITY_FOCUS as string[]).includes(f))
-  const coach = slot.coach
+  const coach = slot.coach || {
+    setup: slot.materials || '材料备好，选她状态轻松的时间。',
+    script: slot.steps,
+    watch: '兴趣与情绪；完成度比标准答案重要。',
+    ifStuck: slot.tip || '不想做就缩短时间，明天再试。',
+  }
 
   return (
-    <article className={`glass card${open ? ' open' : ''}${done ? ' done' : ''}`}>
-      <div className="card-head" onClick={onOpen} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onOpen()}>
+    <article className={`glass card open${done ? ' done' : ''}`}>
+      <div className="card-head">
         <div className="orb-lg" style={{ ['--orb-color' as string]: meta.color }}>
           <span>{meta.emoji}</span>
         </div>
@@ -175,64 +191,42 @@ function ActivityCard({
             <span className="chip" style={{ color: meta.color }}>
               {meta.name} · {slot.minutes} 分钟
             </span>
-            {focusChips.map((c) => (
-              <span key={c.short} className="chip">
-                {c.short}
-              </span>
-            ))}
             {hasPriority && <span className="chip focus">重点</span>}
-            <span className="chip focus">{open ? '收起跟练' : '展开跟练'}</span>
+            <span className="chip focus">跟练</span>
           </div>
-          {slot.guide && <p className="card-guide">《指南》：{slot.guide}</p>}
         </div>
       </div>
 
-      {/* 默认展示跟练详情，家长可以直接照做 */}
-      <div className="card-steps always" style={{ display: 'flex' }}>
-        {slot.steps.map((s, i) => (
-          <li key={`st-${i}`}>{s}</li>
+      {/* 只保留跟练 */}
+      <ul className="card-steps always" style={{ display: 'flex' }}>
+        <li style={{ counterIncrement: 'none', background: 'rgba(255,45,149,0.08)' }}>
+          <strong style={{ color: 'var(--pink-deep)' }}>准备</strong>
+          {coach.setup}
+        </li>
+        {coach.script.map((line, i) => (
+          <li key={`sc-${i}`} style={{ counterIncrement: 'none' }}>
+            <strong style={{ color: 'var(--pink-deep)' }}>跟练 {i + 1}</strong>
+            {line}
+          </li>
         ))}
-        {slot.materials && <li style={{ counterIncrement: 'none' }}>材料：{slot.materials}</li>}
-        {coach && open && (
-          <>
-            <li style={{ counterIncrement: 'none', background: 'rgba(255,45,149,0.08)' }}>
-              <strong style={{ color: 'var(--pink-deep)' }}>准备</strong>
-              {coach.setup}
-            </li>
-            {coach.script.map((line, i) => (
-              <li key={`sc-${i}`} style={{ counterIncrement: 'none' }}>
-                <strong style={{ color: 'var(--pink-deep)' }}>话术 {i + 1}</strong>
-                {line}
-              </li>
-            ))}
-            <li style={{ counterIncrement: 'none' }}>
-              <strong style={{ color: 'var(--pink-deep)' }}>观察点</strong>
-              {coach.watch}
-            </li>
-            <li style={{ counterIncrement: 'none' }}>
-              <strong style={{ color: 'var(--pink-deep)' }}>不想做时</strong>
-              {coach.ifStuck}
-            </li>
-            {coach.bonus && (
-              <li style={{ counterIncrement: 'none' }}>
-                <strong style={{ color: 'var(--pink-deep)' }}>加分挑战</strong>
-                {coach.bonus}
-              </li>
-            )}
-          </>
-        )}
-        {coach && !open && (
+        <li style={{ counterIncrement: 'none' }}>
+          <strong style={{ color: 'var(--pink-deep)' }}>观察点</strong>
+          {coach.watch}
+        </li>
+        <li style={{ counterIncrement: 'none' }}>
+          <strong style={{ color: 'var(--pink-deep)' }}>不想做时</strong>
+          {coach.ifStuck}
+        </li>
+        {coach.bonus && (
           <li style={{ counterIncrement: 'none' }}>
-            <strong style={{ color: 'var(--pink-deep)' }}>准备</strong>
-            {coach.setup}
+            <strong style={{ color: 'var(--pink-deep)' }}>加分挑战</strong>
+            {coach.bonus}
           </li>
         )}
-      </div>
+      </ul>
 
       <div className="card-foot">
-        <div className="card-tip">
-          {coach && !open ? '点标题展开完整家长话术与观察点' : slot.tip || '轻松玩就好，过程比结果重要。'}
-        </div>
+        <div className="card-tip">照着「跟练」说和做即可，过程比结果重要。</div>
         <button
           type="button"
           className={`check${done ? ' on' : ''}`}
