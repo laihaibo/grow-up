@@ -27,6 +27,14 @@ export type Activity = {
   guide?: string
   tip?: string
   weekendBoost?: boolean
+  /** 家长跟练脚本（由 coach.ts 合并） */
+  coach?: {
+    setup: string
+    script: string[]
+    watch: string
+    ifStuck: string
+    bonus?: string
+  }
 }
 
 export const DOMAIN_META: Record<
@@ -966,12 +974,21 @@ export const CHOICE_PROMPTS = [
   { id: 'choice-help', label: '我想帮忙/当队长', hint: '家务、发指令、分享时刻…', domain: 'social' as Domain, focus: ['social', 'life'] as FocusTag[], minutes: 15 },
 ]
 
-export const ALL_ACTIVITIES = activities
-
 export function activitiesByDomain(domain: Domain) {
-  return activities.filter((a) => a.domain === domain)
+  return ALL_ACTIVITIES.filter((a) => a.domain === domain)
 }
 
 export function getActivity(id: string) {
-  return activities.find((a) => a.id === id)
+  return ALL_ACTIVITIES.find((a) => a.id === id)
 }
+
+// —— merge extra bank + parent coach scripts (after all exports avoid circular values in type zone) ——
+import { EXTRA_ACTIVITIES } from './activities-extra'
+import { coachFor } from './coach'
+
+export const ALL_ACTIVITIES: Activity[] = [...activities, ...EXTRA_ACTIVITIES].map((a) => ({
+  ...a,
+  coach: a.coach || coachFor(a.id, a.tip),
+}))
+
+export const ACTIVITY_COUNT = ALL_ACTIVITIES.length

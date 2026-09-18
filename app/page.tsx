@@ -90,7 +90,7 @@ export default function TodayPage() {
 
       <div className="section-title">
         <h2>今日活动</h2>
-        <span className="hint">点开看步骤 · 圆圈打卡</span>
+        <span className="hint">含步骤 + 家长话术 · 圆圈打卡</span>
       </div>
 
       <div className="cards">
@@ -161,6 +161,7 @@ function ActivityCard({
   const meta = DOMAIN_META[slot.domain]
   const focusChips = slot.focus.slice(0, 4).map((f) => FOCUS_META[f])
   const hasPriority = slot.focus.some((f) => (PRIORITY_FOCUS as string[]).includes(f))
+  const coach = slot.coach
 
   return (
     <article className={`glass card${open ? ' open' : ''}${done ? ' done' : ''}`}>
@@ -180,20 +181,58 @@ function ActivityCard({
               </span>
             ))}
             {hasPriority && <span className="chip focus">重点</span>}
+            <span className="chip focus">{open ? '收起跟练' : '展开跟练'}</span>
           </div>
           {slot.guide && <p className="card-guide">《指南》：{slot.guide}</p>}
         </div>
       </div>
 
-      <ul className="card-steps">
+      {/* 默认展示跟练详情，家长可以直接照做 */}
+      <div className="card-steps always" style={{ display: 'flex' }}>
         {slot.steps.map((s, i) => (
-          <li key={i}>{s}</li>
+          <li key={`st-${i}`}>{s}</li>
         ))}
         {slot.materials && <li style={{ counterIncrement: 'none' }}>材料：{slot.materials}</li>}
-      </ul>
+        {coach && open && (
+          <>
+            <li style={{ counterIncrement: 'none', background: 'rgba(255,45,149,0.08)' }}>
+              <strong style={{ color: 'var(--pink-deep)' }}>准备</strong>
+              {coach.setup}
+            </li>
+            {coach.script.map((line, i) => (
+              <li key={`sc-${i}`} style={{ counterIncrement: 'none' }}>
+                <strong style={{ color: 'var(--pink-deep)' }}>话术 {i + 1}</strong>
+                {line}
+              </li>
+            ))}
+            <li style={{ counterIncrement: 'none' }}>
+              <strong style={{ color: 'var(--pink-deep)' }}>观察点</strong>
+              {coach.watch}
+            </li>
+            <li style={{ counterIncrement: 'none' }}>
+              <strong style={{ color: 'var(--pink-deep)' }}>不想做时</strong>
+              {coach.ifStuck}
+            </li>
+            {coach.bonus && (
+              <li style={{ counterIncrement: 'none' }}>
+                <strong style={{ color: 'var(--pink-deep)' }}>加分挑战</strong>
+                {coach.bonus}
+              </li>
+            )}
+          </>
+        )}
+        {coach && !open && (
+          <li style={{ counterIncrement: 'none' }}>
+            <strong style={{ color: 'var(--pink-deep)' }}>准备</strong>
+            {coach.setup}
+          </li>
+        )}
+      </div>
 
       <div className="card-foot">
-        <div className="card-tip">{slot.tip || '轻松玩就好，过程比结果重要。'}</div>
+        <div className="card-tip">
+          {coach && !open ? '点标题展开完整家长话术与观察点' : slot.tip || '轻松玩就好，过程比结果重要。'}
+        </div>
         <button
           type="button"
           className={`check${done ? ' on' : ''}`}

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#F9EAF2" />
+  <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
   <title>小芽成长</title>
   <style>
     :root{
@@ -158,6 +159,22 @@
     {id:'brave-trusted-adults',title:'我的安全大人名单',domain:'social',focus:['social','life'],minutes:12,steps:['列出可求助的人','画符号贴固定位置','练：我需要帮助。','约定家里永远站在她这边']},
     {id:'brave-story-talk',title:'故事里的勇敢选择',domain:'language',focus:['listen','social','speak'],minutes:15,steps:['讲被欺负的小故事','停下来问：可以怎么做？','列2种办法：说停/走开/告诉大人','不敢说就和朋友一起去','画“勇敢的自己”']},
     {id:'brave-power-pose',title:'超人站姿充电',domain:'health',focus:['motor','speak'],minutes:8,steps:['双手叉腰抬头挺胸20秒','深呼吸三次','喊：我可以保护自己！我可以说出来！','上学前当充电']}
+  {id:'mix-night-review',title:'睡前三件事回顾',domain:'social',focus:['speak','social'],minutes:8,steps:['今天做了什么好玩的','有没有一次「说出来」','明天最想玩什么','晚安，警长小芽'],tip:'把成长重点放进每日仪式。'},
+  {id:'hz-radical-lego',title:'偏旁积木拼字',domain:'language',focus:['hanzi','logic'],minutes:15,steps:['摆出偏旁当左半边','摆右半边拼字','拼出江、妈、问','还有谁能和氵做朋友？'],tip:'只玩拼和念，不要求默写。'},
+  {id:'hz-market-words',title:'超市价签认字',domain:'language',focus:['hanzi'],minutes:12,steps:['看超市价签','找大、小、多、米、奶','读一遍跟一遍','回家画字卡'],tip:'生活场景比闪卡更牢。'},
+  {id:'en-food-menu',title:'English 小菜单',domain:'language',focus:['english','speak'],minutes:15,steps:['apple, milk, bread, egg','点餐：I want apple.','售货员确认 apple?','Thank you / Yummy'],tip:'吃相关词最积极。'},
+  {id:'en-super-simon',title:'Simon Says',domain:'language',focus:['english','motor'],minutes:12,steps:['Simon says touch your nose.','Simon says jump.','没说Simon不能动','交换当Simon'],tip:'听懂指令优先。'},
+  {id:'math-dice-race',title:'骰子走步棋',domain:'science',focus:['math'],minutes:15,steps:['掷骰子看点数','大声数走几步','到终点击掌','两人比赛'],tip:'点数与数量对应。'},
+  {id:'math-snack-share',title:'零食公平分',domain:'science',focus:['math','social'],minutes:10,steps:['3人怎么分6块','一人一块轮流发','多的少的怎么办','公平比一样多更值得聊'],tip:'用积木也可以。'},
+  {id:'logic-detective-yesno',title:'是或不是侦探',domain:'science',focus:['logic','speak'],minutes:12,steps:['心里想一个家里物品','她只问是不是','用是/否回答','猜中换人'],tip:'提问能力=逻辑核心。'},
+  {id:'logic-if-then',title:'如果…就…',domain:'science',focus:['logic','speak'],minutes:10,steps:['如果下雨就…','如果饿了就…','她出题家长答','再交换'],tip:'因果句式练逻辑。'},
+  {id:'logic-copy-cat',title:'复制积木',domain:'science',focus:['logic'],minutes:12,steps:['家长搭3–5块造型','她观察后复制','从3块加到5块','交换角色'],tip:'空间记忆与观察。'},
+  {id:'sci-ice-melt',title:'冰块融化实验',domain:'science',focus:['nature'],minutes:15,steps:['摸摸冰什么感觉','猜哪杯化得快','每3分钟观察','说发现'],tip:'观察记录意识。'},
+  {id:'health-bubble-pop',title:'泡泡追逐战',domain:'health',focus:['motor'],minutes:15,steps:['家长吹泡泡','她拍、跳、追','数拍破几个','她练习吹泡泡'],tip:'防水地面。'},
+  {id:'social-phone-call',title:'打电话练习',domain:'social',focus:['speak','social'],minutes:10,steps:['喂你好我是…','请问妈妈在吗','说清楚一件事','给玩偶真打一通'],tip:'完整句与礼貌。'},
+  {id:'social-proud-list',title:'骄傲清单',domain:'social',focus:['social','speak'],minutes:10,steps:['说3件自己会的事','家长补充','画下来','贴床头'],tip:'对抗胆小的认知训练。'},
+  {id:'mix-logic-dress',title:'穿衣决策树',domain:'science',focus:['logic','life'],minutes:10,steps:['今天冷还是热','室外活动多吗','如果…就穿…','她做决定并说明'],tip:'真实决策胜过题目。'},
+  {id:'art-box-town',title:'纸箱迷你小镇',domain:'art',focus:['craft','logic'],minutes:35,weekendBoost:true,steps:['纸箱当建筑','画门牌编街道','玩偶入住演日常','小镇还需要什么？'],tip:'建构+角色+叙事。'}
   ];
   const CHOICE=[
     {id:'choice-build',label:'我想搭建',hint:'积木、纸箱、火箭、斜坡…',minutes:20},
@@ -168,6 +185,16 @@
     {id:'choice-help',label:'我想帮忙/当队长',hint:'家务、发指令、分享时刻…',minutes:15}
   ];
   const PARENT_TIPS=['先共情再聊天：她若说幼儿园不开心，先抱一抱，再请 AI 讲相关故事。','AI 讲完别急着教育；问一句“你最喜欢哪一段？”就够。','恐怖元素出现时，直接说“我们不讲吓人的，换成勇敢帮助别人”。','跟读、音量、选择题都是练习；她沉默也很正常。','固定晚安点名，比天天长故事更利于入睡。'];
+  const COACH_FALLBACK=function(tip){return{setup:'材料备好，选她状态轻松的时间开始。',script:['我们今天玩这个，妈妈和你一起。',tip||'轻松玩就好，过程比结果重要。','结束后问：你最喜欢哪一步？'],watch:'兴趣与情绪；完成度比标准答案重要。',ifStuck:'不想做：缩短时间，或换自选角，明天再试。'}};
+  const COACH={
+'hz-shape-cards':{setup:'桌面铺软垫，6组图+字卡混洗。',script:['宝贝，今天玩字宝宝找家。先看图，这是什么？','太阳的「日」，妈妈指一指，你也指一指。','字卡宝宝躲起来了，你帮它们找到家好不好？','配对成功：对啦！山字长得像三座小山峰。','配错没关系，我们再看看图。'],watch:'是否愿意指认；认错很正常。',ifStuck:'只玩图；或把字盖在图上就成功。'},
+'brave-stop':{setup:'两个玩偶；氛围轻松。',script:['小熊抢了小兔的胡萝卜，小兔很难过。','我们教小兔说：停！我不喜欢这样！','双手像小盾牌推出去，声音稳一点。','你来扮演小兔，说三遍，一遍比一遍坚定。','说了还不停？走开，然后告诉老师/大人。','你刚才声音很稳，这就是勇敢。'],watch:'音量与眼神；事后是否放松。',ifStuck:'先对玩偶说，再对妈妈说；不强迫。'},
+'brave-teacher':{setup:'椅子当办公桌。',script:['现在我是老师，请你来报告。','示范：老师，XX推了我，我不舒服。','完整说一遍，眼睛看着老师。','（认真听）谢谢你告诉我，我会去了解。','告诉老师有用，老师站在你这边。'],watch:'完整句；是否感到被支持。',ifStuck:'用填空：老师，XX___我。'},
+'math-count-fruit':{setup:'15个左右小物件分5堆。',script:['今天你当收银员。','请给我3个苹果，数对才能给。','哪一堆最多？','再买一个变成几个？'],watch:'是否一物一数。',ifStuck:'说我们再一起数一次。'},
+'mix-hanzi-hopscotch':{setup:'胶带/粉笔写格子字。',script:['格子里写本周认的字','跳到哪格念哪个字','念对前进，集齐5字成功'],watch:'运动+认字是否开心。',ifStuck:'格子改少，字改熟。'},
+'mix-night-review':{setup:'睡前安静时刻。',script:['今天做了什么好玩的？','有没有一次「说出来」？','明天最想玩什么？','晚安，警长小芽。'],watch:'情绪与表达意愿。',ifStuck:'不想说就抱着安静一会儿。'}
+  };
+  function coachOf(a){return a.coach||COACH[a.id]||COACH_FALLBACK(a.tip)}
   const STORIES=[
     {id:'night-mascot',title:'黑猫警长的晚安巡逻',minutes:'10–15 分钟',tags:['黑猫警长','长故事','睡前'],scene:'一天结束时，森林要关灯休息，警长最后一次巡逻。',prompt:'你是一位温柔会讲故事的儿童故事讲述人。请和一个 4 岁、梦想成为警察、超级喜欢黑猫警长的小女孩聊天。\n\n今晚讲一个完整的睡前长故事：《黑猫警长的晚安巡逻》。\n\n要求：\n1. 用黑猫警长做主角，语气亲切、勇敢但不吓人；不要血腥、追杀、恐怖细节。\n2. 故事分 4–5 幕：出发巡逻 → 遇到需要帮助的小动物 → 小小难题 → 团结解决 → 回到警局说晚安。\n3. 每一幕停一下，问孩子一个简单选择或感受问题，根据她的回答再往下讲。\n4. 穿插：帮助别人、遵守规则、有事要说出来、团队合作。\n5. 结尾让她成为“小小见习警员”，得到鼓励，轻声道晚安。\n6. 中文，短句，3–4 岁能懂；睡前不要太兴奋。\n\n现在从第一幕开始，先简短介绍今晚任务，并提出第一个互动问题。',parentNote:'家长可代答或鼓励她自己说，像互动广播剧。'},
     {id:'brave-report',title:'去警察局说清楚',minutes:'8–12 分钟',tags:['勇敢表达','求助','互动'],scene:'练习“不舒服时告诉大人/老师”的安全感故事。',prompt:'请扮演会讲互动故事的 AI 伙伴，听众是一位 4 岁、想当警察、喜欢黑猫警长的小女孩。\n\n今晚故事主题：《去警察局说清楚》——不是讲危险，而是讲“说出来会被帮助”。\n\n情节方向：\n- 小动物在幼儿园遇到不开心的事，一开始不敢说。\n- 黑猫警长告诉她：告诉老师和警察不是告状，是求助。\n- 一起练习三句话：“停，我不喜欢这样。”“我要走开了。”“老师，请帮帮我。”\n- 最后问题被温柔解决，她获得“勇气徽章”。\n\n互动：讲两句就停，邀请她跟读；多肯定；不要说“怎么不打回去”。\n结尾问：明天如果需要帮助，你最想找谁？\n\n现在开始，先邀请她认识“勇气任务”，并请她说第一句。',parentNote:'对应“受欺负不会说”的成长重点，可每天换一句练。'},
@@ -268,15 +295,20 @@
       const bar=plan.domainMinutes.filter(function(d){return d.minutes>0}).map(function(d){return '<span style="width:'+(d.minutes/Math.max(plan.plannedMinutes,1)*100)+'%;background:'+d.color+'"></span>'}).join('');
       const cards=plan.slots.map(function(s){
         const m=DOMAIN[s.domain];const chips=s.focus.slice(0,4).map(function(f){return '<span class="chip">'+esc(FOCUS[f]||f)+'</span>'}).join('')+(s.focus.some(function(f){return PRIO.indexOf(f)>=0})?'<span class="chip focus">重点</span>':'');
-        const done=doneList.indexOf(s.id)>=0;const open=openId===s.id;
-        return '<article class="glass card'+(open?' open':'')+(done?' done':'')+'" data-id="'+s.id+'"><div class="card-head" data-open="'+s.id+'"><div class="orb-lg" style="--orb-color:'+m.color+'">'+m.emoji+'</div><div class="card-body"><h3 class="card-title">'+esc(s.title)+'</h3><div class="card-meta"><span class="chip" style="color:'+m.color+'">'+m.name+' · '+s.minutes+' 分钟</span>'+chips+'</div>'+(s.guide?'<p class="card-guide">《指南》：'+esc(s.guide)+'</p>':'')+'</div></div><ul class="card-steps">'+s.steps.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+(s.materials?'<li>材料：'+esc(s.materials)+'</li>':'')+'</ul><div class="card-foot"><div class="card-tip">'+esc(s.tip||'轻松玩就好，过程比结果重要。')+'</div><button type="button" class="check'+(done?' on':'')+'" data-check="'+s.id+'" aria-label="打卡">✓</button></div></article>';
+        const done=doneList.indexOf(s.id)>=0;const open=openId===s.id;const co=coachOf(s);
+        const stepsHtml=s.steps.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+(s.materials?'<li>材料：'+esc(s.materials)+'</li>':'')+
+          '<li style="counter-increment:none;background:rgba(255,45,149,.08)"><strong style="color:var(--pink-deep)">准备</strong>'+esc(co.setup)+'</li>'+
+          co.script.map(function(line,i){return '<li style="counter-increment:none"><strong style="color:var(--pink-deep)">话术 '+(i+1)+'</strong>'+esc(line)+'</li>'}).join('')+
+          '<li style="counter-increment:none"><strong style="color:var(--pink-deep)">观察点</strong>'+esc(co.watch)+'</li>'+
+          '<li style="counter-increment:none"><strong style="color:var(--pink-deep)">不想做时</strong>'+esc(co.ifStuck)+'</li>';
+        return '<article class="glass card open'+(done?' done':'')+'" data-id="'+s.id+'"><div class="card-head" data-open="'+s.id+'"><div class="orb-lg" style="--orb-color:'+m.color+'">'+m.emoji+'</div><div class="card-body"><h3 class="card-title">'+esc(s.title)+'</h3><div class="card-meta"><span class="chip" style="color:'+m.color+'">'+m.name+' · '+s.minutes+' 分钟</span>'+chips+'<span class="chip focus">家长跟练</span></div>'+(s.guide?'<p class="card-guide">《指南》：'+esc(s.guide)+'</p>':'')+'</div></div><ul class="card-steps always">'+stepsHtml+'</ul><div class="card-foot"><div class="card-tip">'+esc(s.tip||'照着话术做就可以，过程比结果重要。')+'</div><button type="button" class="check'+(done?' on':'')+'" data-check="'+s.id+'" aria-label="打卡">✓</button></div></article>';
       }).join('');
       const ch=plan.choice;const chDone=doneList.indexOf(ch.id)>=0;
       cards+='<article class="glass card"><div class="card-head"><div class="orb-lg" style="--orb-color:var(--pink-soft)">🫧</div><div class="card-body"><h3 class="card-title">自选角 · '+esc(ch.label)+'</h3><div class="card-meta"><span class="chip focus">她来决定</span><span class="chip">约 '+ch.minutes+' 分钟</span></div><p class="card-guide">没有“男孩游戏 / 女孩游戏”。运动、搭建、科学、故事、创作、当队长——想试哪个就试哪个。今天可以试：'+esc(ch.hint)+'</p><ul class="card-steps always"><li>问：“你今天最想玩哪一种？”</li><li>让她先选方向，家长只配合</li><li>问“你发现了什么？”而不是教标准答案</li></ul></div></div><div class="card-foot"><div class="card-tip">选择本身就是成长。</div><button type="button" class="check'+(chDone?' on':'')+'" data-check="'+ch.id+'" aria-label="自选角打卡">✓</button></div></article>';
       main='<div class="date-row"><span class="wd">'+plan.weekdayLabel+'</span><span class="full">'+plan.dateLabel+' · '+(plan.isWeekend?'周末长时段':'工作日 1.5 小时')+'</span></div>'+
         '<section class="glass ribbon"><div class="ribbon-top"><div><h2>今日时间花环</h2><div class="ribbon-pills">'+pills+'</div></div><div class="budget">'+plan.plannedMinutes+'<span style="font-size:13px;color:var(--muted)"> / '+plan.budgetMinutes+' 分</span></div></div><div class="ribbon-bar">'+bar+'</div><div style="margin-top:10px;font-size:12px;color:var(--muted);font-weight:600">已完成 '+doneCount+'/'+(plan.slots.length+1)+' · 汉字/英语/数学/逻辑 + 勇敢表达 + 自选</div><div class="progress-bar"><i style="width:'+pct+'%"></i></div></section>'+
         '<section class="glass brave"><h3>💪 今日勇气练习 · '+esc(plan.braveFocus.title)+'</h3><p>'+esc(plan.braveFocus.hint)+'</p><div class="guide-tag">家里先练：说“停” → 走开 → 告诉老师/家长</div></section>'+
-        '<div class="section-title"><h2>今日活动</h2><span class="hint">点开看步骤 · 圆圈打卡</span></div><div class="cards">'+cards+'</div>';
+        '<div class="section-title"><h2>今日活动</h2><span class="hint">含步骤+家长话术 · 圆圈打卡</span></div><div class="cards">'+cards+'</div>';
     } else if(tab==='domains'){
       const rows=Object.keys(DOMAIN).map(function(k){const m=DOMAIN[k];return '<section class="glass page-block"><div style="display:flex;gap:12px;align-items:center;margin-bottom:8px"><div class="orb-lg" style="--orb-color:'+m.color+'">'+m.emoji+'</div><div><h3 style="color:'+m.color+'">'+m.name+'</h3><p style="font-size:12px">'+m.line+'</p></div></div><ul><li>3–4 岁与 4–4.5 岁目标对照《3-6岁儿童学习与发展指南》</li><li>在游戏中发展，不追求超前刷题</li></ul></section>'}).join('');
       main='<section class="glass page-block" style="border-color:rgba(255,45,149,.25)"><h3 style="color:var(--pink-deep)">不设限的成长</h3><p>粉色只是界面颜色，不是内容边界。运动、搭建、科学实验、当队长、沙土探索，和认字、英语、画画同样重要。每天有一角由<strong style="color:var(--ink)">她自己选</strong>。</p><div class="guide-tag">想试什么就试什么</div></section>'+
@@ -305,7 +337,7 @@
       const bars=Object.keys(DOMAIN).map(function(k){const m=DOMAIN[k],n=map[k]||0;return '<div style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span>'+m.emoji+' '+m.name+'</span><span style="color:var(--muted)">'+n+' 次</span></div><div class="progress-bar"><i style="width:'+(n/max*100)+'%;background:'+m.color+'"></i></div></div>'}).join('');
       const list=keys.length?'<div>'+keys.map(function(k){return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.5)"><span style="font-weight:600;font-size:14px">'+k+'</span><span style="color:var(--pink);font-family:ui-monospace,SF Mono,Menlo,monospace;font-weight:700">'+(prog[k]||[]).length+' 项</span></div>'}).join('')+'</div>':'<div style="padding:20px 0;text-align:center;color:var(--muted);font-size:14px">还没有打卡。今天任意完成一项就会出现在这里。</div>';
       main='<div class="section-title"><h2>成长足迹</h2><span class="hint">仅保存在本机</span></div><div class="stat-grid"><div class="stat"><div class="num">'+doneCount+'</div><div class="lbl">今日完成</div></div><div class="stat"><div class="num">'+all+'</div><div class="lbl">累计打卡</div></div><div class="stat"><div class="num">'+Object.keys(prog).length+'</div><div class="lbl">有记录天数</div></div><div class="stat"><div class="num" style="font-size:20px;padding-top:4px">'+(age.turnedFour?'4 岁':age.daysToFour+'d')+'</div><div class="lbl">'+(age.turnedFour?'年龄':'距 4 岁')+'</div></div></div>'+
-        '<section class="glass page-block"><h3>数据备份（JSON）</h3><p>打卡仅存在本机浏览器。换手机或清缓存前请先导出，新设备再导入。</p><div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap"><button type="button" id="btn-export" style="min-height:44px;padding:0 16px;border-radius:999px;background:linear-gradient(135deg,var(--pink),var(--pink-soft));color:#fff;font-weight:700;font-size:14px">导出 JSON</button><button type="button" id="btn-import" style="min-height:44px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.8);border:1px solid rgba(255,107,157,.35);color:var(--pink-deep);font-weight:700;font-size:14px">导入 JSON</button><input id="file-import" type="file" accept="application/json,.json" hidden /></div>'+(progMsg?'<div class="guide-tag" style="margin-top:10px">'+esc(progMsg)+'</div>':'')+'<p style="margin-top:10px;font-size:12px">当前 <strong style="color:var(--pink)">'+Object.keys(prog).length+'</strong> 天数据 · 活动库 <strong style="color:var(--pink)">'+ACT.length+'</strong> 条（每日按日期自动组合）</p></section>'+
+        '<section class="glass page-block"><h3>数据备份（JSON）</h3><p>打卡仅存在本机浏览器。换手机或清缓存前请先导出，新设备再导入。</p><div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap"><button type="button" id="btn-export" style="min-height:44px;padding:0 16px;border-radius:999px;background:linear-gradient(135deg,var(--pink),var(--pink-soft));color:#fff;font-weight:700;font-size:14px">导出 JSON</button><button type="button" id="btn-import" style="min-height:44px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.8);border:1px solid rgba(255,107,157,.35);color:var(--pink-deep);font-weight:700;font-size:14px">导入 JSON</button><input id="file-import" type="file" accept="application/json,.json" hidden /></div>'+(progMsg?'<div class="guide-tag" style="margin-top:10px">'+esc(progMsg)+'</div>':'')+'<p style="margin-top:10px;font-size:12px">当前 <strong style="color:var(--pink)">'+Object.keys(prog).length+'</strong> 天数据 · 活动库 <strong style="color:var(--pink)">'+ACT.length+'</strong> 条（每日按日期自动组合，含家长跟练话术）</p></section>'+
         '<section class="glass page-block"><h3>领域覆盖（累计）</h3><p>覆盖是参考不是排名。长期尽量五领域都碰到。</p>'+bars+'</section>'+
         '<section class="glass page-block"><h3>最近有记录的日子</h3>'+list+'</section>'+
         '<section class="glass page-block"><h3>给家长的一句话</h3><p>目标不是学了多少字，而是她更愿意表达、更敢尝试、更会想办法。若她胆小：先共情，再一起练“说停—走开—告诉老师”。她可以文静，也可以大声维护自己——都对。</p></section>';
