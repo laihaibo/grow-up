@@ -1,0 +1,28 @@
+{
+  "name": "grow-up",
+  "version": "1.0.0",
+  "private": true,
+  "description": "小芽成长 — 基于《3-6岁儿童学习与发展指南》的每日亲子活动计划",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "next start",
+    "export": "next build",
+    "prepare:phone": "node scripts/prepare-phone.mjs"
+  },
+  "dependencies": {
+    "next": "^15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.4",
+    "@types/react-dom": "^19.0.2",
+    "typescript": "^5.7.3"
+  },
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

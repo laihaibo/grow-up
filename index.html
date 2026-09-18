@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#F9EAF2" />
+  <title>小芽成长</title>
+  <style>
+    :root{
+      --canvas:#F9EAF2;--canvas-deep:#F3D6E7;--ink:#2B1B24;--muted:#8A6B7A;
+      --glass:rgba(255,255,255,.68);--glass-edge:rgba(255,255,255,.82);
+      --pink:#FF2D95;--pink-soft:#FF6B9D;--pink-deep:#E11D7A;
+      --health:#5CD6A0;--language:#FFB07C;--social:#FF6B9D;--science:#A78BFA;--art:#F472B6;
+      --radius-lg:28px;--radius-md:20px;
+      --safe-bottom:max(88px,env(safe-area-inset-bottom,88px));
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;padding:0;min-height:100%;font-family:"SF Pro Display","SF Pro Text","PingFang SC","Noto Sans SC",system-ui,-apple-system,sans-serif;color:var(--ink)}
+    body{background:radial-gradient(120% 80% at 10% -10%,rgba(255,45,149,.18),transparent 50%),radial-gradient(100% 70% at 90% 0%,rgba(244,114,182,.2),transparent 45%),radial-gradient(80% 50% at 50% 100%,rgba(167,139,250,.16),transparent 50%),linear-gradient(180deg,var(--canvas),var(--canvas-deep));background-attachment:fixed}
+    button{font:inherit;border:none;background:none;color:inherit;cursor:pointer}
+    .app{width:min(100%,430px);margin:0 auto;min-height:100vh;min-height:100dvh;padding:16px 16px var(--safe-bottom);position:relative}
+    .glass{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius-lg);box-shadow:0 10px 40px rgba(224,80,140,.14),inset 0 1px 0 rgba(255,255,255,.85);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%)}
+    .glass-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;margin-bottom:14px;position:sticky;top:12px;z-index:20}
+    .brand-kicker{font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--pink)}
+    .brand-title{font-size:22px;font-weight:700;margin:4px 0 0;letter-spacing:-.02em}
+    .age-badge{text-align:right;flex-shrink:0}
+    .age-badge .days{display:inline-flex;padding:8px 12px;border-radius:999px;background:linear-gradient(135deg,rgba(255,45,149,.16),rgba(244,114,182,.22));border:1px solid rgba(255,45,149,.2);color:var(--pink-deep);font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12px;font-weight:700}
+    .age-badge .meta{margin-top:6px;font-size:12px;color:var(--muted);font-weight:500}
+    .date-row{display:flex;align-items:baseline;gap:10px;margin:2px 0 14px}
+    .date-row .wd{font-size:15px;font-weight:700;color:var(--pink)}
+    .date-row .full{font-size:13px;color:var(--muted)}
+    .ribbon{padding:18px;margin-bottom:16px}
+    .ribbon-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+    .ribbon-top h2{margin:0;font-size:15px;font-weight:600}
+    .ribbon-top .budget{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:20px;font-weight:700;color:var(--pink)}
+    .ribbon-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 16px rgba(255,107,157,.12);font-size:12px;font-weight:600}
+    .pill .orb,.orb{width:10px;height:10px;border-radius:50%}
+    .pill .min{color:var(--muted);font-family:ui-monospace,"SF Mono",Menlo,monospace;font-weight:700}
+    .ribbon-bar{margin-top:14px;height:10px;border-radius:999px;overflow:hidden;display:flex;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.7)}
+    .ribbon-bar span{height:100%}
+    .progress-bar{height:8px;border-radius:999px;background:rgba(255,255,255,.55);overflow:hidden;margin-top:8px}
+    .progress-bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),var(--pink-soft));border-radius:inherit}
+    .section-title{display:flex;align-items:center;justify-content:space-between;margin:6px 4px 12px}
+    .section-title h2{margin:0;font-size:20px;font-weight:700}
+    .section-title .hint{font-size:12px;color:var(--muted);font-weight:500}
+    .cards{display:flex;flex-direction:column;gap:12px}
+    .card{padding:16px;text-align:left;width:100%;display:block}
+    .card:active{transform:scale(.985)}
+    .card-head{display:flex;gap:12px;align-items:flex-start;width:100%}
+    .orb-lg{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-size:18px;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.85),transparent 40%),var(--orb-color,var(--pink-soft));box-shadow:0 6px 16px color-mix(in srgb,var(--orb-color,var(--pink-soft)) 35%,transparent),inset 0 0 0 1px rgba(255,255,255,.45)}
+    .card-body{flex:1;min-width:0}
+    .card-title{margin:0 0 4px;font-size:16px;font-weight:700}
+    .card-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+    .chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(255,255,255,.7);color:var(--muted);border:1px solid rgba(255,255,255,.8)}
+    .chip.focus{color:var(--pink-deep);background:rgba(255,45,149,.1);border-color:rgba(255,45,149,.18)}
+    .card-guide{margin:0;font-size:13px;line-height:1.5;color:var(--muted)}
+    .card-steps{margin:10px 0 0;padding:0;list-style:none;display:none;flex-direction:column;gap:6px;counter-reset:step}
+    .card.open .card-steps,.card-steps.always{display:flex}
+    .card-steps li{font-size:13px;line-height:1.45;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.55);color:var(--ink);counter-increment:step}
+    .card-steps li::before{content:counter(step) ". ";color:var(--pink);font-weight:700;font-family:ui-monospace,"SF Mono",Menlo,monospace}
+    .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:10px}
+    .card-tip{font-size:12px;color:var(--pink-deep);flex:1;line-height:1.4}
+    .check{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.75);border:2px solid rgba(255,107,157,.45);color:transparent;font-weight:800;flex-shrink:0}
+    .check.on{background:linear-gradient(135deg,var(--pink),var(--pink-soft));border-color:transparent;color:#fff}
+    .card.done .card-title{opacity:.72}
+    .brave{margin-bottom:16px;padding:16px 18px;border-color:rgba(255,45,149,.3);background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,107,157,.12))}
+    .brave h3{margin:0 0 6px;font-size:16px;color:var(--pink-deep)}
+    .brave p{margin:0;font-size:13px;line-height:1.55;color:var(--muted)}
+    .guide-tag{display:inline-block;margin-top:8px;font-size:11px;color:var(--pink-deep);background:rgba(255,45,149,.1);border-radius:999px;padding:4px 8px;font-weight:600}
+    .tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom,12px));width:min(calc(100% - 24px),406px);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px;z-index:40;border-radius:26px}
+    .tab{min-height:52px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);font-size:11px;font-weight:600}
+    .tab.active{color:var(--pink-deep);background:rgba(255,45,149,.12);box-shadow:inset 0 0 0 1px rgba(255,45,149,.12)}
+    .tab .ico{font-size:18px;line-height:1}
+    .page-block{margin-bottom:14px;padding:16px 18px}
+    .page-block h3{margin:0 0 6px;font-size:16px;font-weight:700}
+    .page-block p{margin:0;font-size:13px;line-height:1.55;color:var(--muted)}
+    .page-block ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.55}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+    .stat{padding:14px;border-radius:var(--radius-md);background:var(--glass);border:1px solid var(--glass-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}
+    .stat .num{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:28px;font-weight:700;color:var(--pink);line-height:1.1}
+    .stat .lbl{margin-top:4px;font-size:12px;color:var(--muted);font-weight:600}
+    .week-day{padding:14px 16px;margin-bottom:10px}
+    .week-day .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .week-day .day{font-weight:700;font-size:15px}
+    .week-day .mins{font-family:ui-monospace,"SF Mono",Menlo,monospace;color:var(--pink);font-weight:700;font-size:13px}
+    .week-titles{font-size:12px;color:var(--muted);line-height:1.45}
+    @media (prefers-reduced-motion:no-preference){
+      @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+      .card,.ribbon,.glass-header,.page-block,.week-day,.brave{animation:rise .35s ease both}
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div>
+  <script>
+(function(){
+  const BIRTHDAY=new Date(2022,9,18); // born 2022-10-18 → turns 4 on 2026-10-18
+  const TURNS4=new Date(2026,9,18);
+  const DOMAIN={health:{name:'健康',color:'#5CD6A0',emoji:'🌿',line:'身心状况 · 动作发展 · 生活习惯'},language:{name:'语言',color:'#FFB07C',emoji:'🗣️',line:'倾听与表达 · 阅读与书写准备'},social:{name:'社会',color:'#FF6B9D',emoji:'💞',line:'人际交往 · 社会适应'},science:{name:'科学',color:'#A78BFA',emoji:'🔬',line:'科学探究 · 数学认知'},art:{name:'艺术',color:'#F472B6',emoji:'🎨',line:'感受与欣赏 · 表现与创造'}};
+  const FOCUS={hanzi:'汉字',english:'英语',math:'数学',logic:'逻辑',motor:'运动',listen:'倾听',speak:'表达',read:'阅读',social:'社交',life:'生活',nature:'自然',music:'音乐',draw:'绘画',craft:'手工'};
+  const PRIO=['hanzi','english','math','logic'];
+  const ACT=[
+    {id:'hz-shape-cards',title:'象形字配对卡',domain:'language',focus:['hanzi','logic'],minutes:15,materials:'字卡：日、月、山、水、火、人',steps:['图片与汉字打乱','先指认图片','配对并念出','玩“字宝宝回家”'],guide:'对文字符号感兴趣',tip:'每次4–6字，认错很正常。'},
+    {id:'hz-scan-hunt',title:'汉字寻宝',domain:'language',focus:['hanzi'],minutes:12,steps:['约定要找的字','在家中包装/绘本上寻找','贴纸或模仿字形','结束时念一遍'],tip:'生活里认字最牢。'},
+    {id:'hz-stroke-air',title:'空中写字',domain:'language',focus:['hanzi','motor'],minutes:10,steps:['食指当魔法笔','边写边说笔画','在手心上互猜'],guide:'感受笔画方向'},
+    {id:'hz-rhyme-book',title:'儿歌绘本指读',domain:'language',focus:['hanzi','read','listen'],minutes:15,steps:['有感情读一遍','手指逐字慢指','孩子接最后一个词','拍手读到会背一两句'],tip:'重复是金。'},
+    {id:'en-color-flash',title:'颜色闪卡小剧场',domain:'language',focus:['english'],minutes:12,steps:['red yellow blue green','Touch the ___','孩子当小老师','中文确认降低压力'],tip:'一天3–4词即可。'},
+    {id:'en-body-song',title:'Head Shoulders 身体歌',domain:'language',focus:['english','motor','music'],minutes:12,steps:['慢速唱并指部位','第二遍加速','单独说单词做动作']},
+    {id:'en-animal-sound',title:'动物英语声',domain:'language',focus:['english','speak'],minutes:10,steps:['cat dog duck bird','学叫声','What’s this?','神秘袋猜测']},
+    {id:'en-count-hello',title:'Hello 与数数',domain:'language',focus:['english','math'],minutes:10,steps:['Hello/Bye-bye','英文数1–5','藏玩具猜数量','中文再巩固']},
+    {id:'math-count-fruit',title:'水果点数超市',domain:'science',focus:['math'],minutes:15,steps:['摆1–5各一堆','收银员点数','哪堆最多/最少','再买一个=加一'],guide:'点数5以内物体',tip:'手口一致：指一个数一个。'},
+    {id:'math-shape-search',title:'形状侦探',domain:'science',focus:['math','logic'],minutes:12,steps:['说目标形状','家中寻找','排成形状火车','“圆形像轮子”']},
+    {id:'math-compare',title:'长短高矮比一比',domain:'science',focus:['math'],minutes:10,steps:['并排比一比','扩展轻重多少','孩子出题考家长']},
+    {id:'math-pattern-clap',title:'拍拍找规律',domain:'science',focus:['math','logic'],minutes:12,steps:['摆ABAB色块','下一个是什么？','拍手规律','孩子设计规律']},
+    {id:'logic-sort-color',title:'袜子分类挑战',domain:'science',focus:['logic','life'],minutes:12,steps:['袜子混在一起','先按颜色分','再按大小','还可以怎么分？'],tip:'先说清分类标准。'},
+    {id:'logic-sequence',title:'先后顺序排一排',domain:'science',focus:['logic','speak'],minutes:12,steps:['起床→穿衣→刷牙→吃饭','打乱重排','先…然后…最后…','换孩子的故事']},
+    {id:'logic-maze-light',title:'纸迷宫寻宝',domain:'science',focus:['logic'],minutes:15,steps:['手指空走','彩笔画路径','成功贴纸','从一个分叉开始']},
+    {id:'logic-odd-one',title:'谁是不一样的？',domain:'science',focus:['logic','speak'],minutes:10,steps:['展示四样','哪个不一样？为什么？','接受有理由的答案','换类别']},
+    {id:'health-balance',title:'小熊过独木桥',domain:'health',focus:['motor'],minutes:15,steps:['张开手臂走直线','脚跟贴脚尖','中途蹲下摘果子','倒走回来'],guide:'沿直线行走保持平衡'},
+    {id:'health-jump',title:'青蛙跳荷叶',domain:'health',focus:['motor'],minutes:15,steps:['地垫当荷叶','双脚并拢连续跳','儿歌助兴','拉开距离挑战']},
+    {id:'health-brush',title:'刷牙小卫士',domain:'health',focus:['life'],minutes:10,steps:['给玩偶示范','上下刷与咬合面','一起刷20秒','夸牙齿亮晶晶'],guide:'早晚刷牙'},
+    {id:'health-throw',title:'纸球投准',domain:'health',focus:['motor'],minutes:12,steps:['揉纸团投篮','肩上投掷','数进几个','调整远近']},
+    {id:'social-role-shop',title:'娃娃家小超市',domain:'social',focus:['social','speak','math'],minutes:20,steps:['售货员/顾客','你好谢谢再见','说清楚要什么','交换角色'],guide:'使用礼貌用语'},
+    {id:'social-share',title:'分享时刻',domain:'social',focus:['social','speak'],minutes:12,steps:['说一件开心的事','我看到你…我觉得…','商量如何分享','拥抱结束']},
+    {id:'social-rule',title:'红灯绿灯停',domain:'social',focus:['social','motor'],minutes:12,steps:['绿灯走红灯停','听指令停下','犯规重来','规则让游戏更好玩']},
+    {id:'sci-plant-watch',title:'阳台小植物观察',domain:'science',focus:['nature','speak'],minutes:15,steps:['看叶子形状颜色','浇水讨论需要什么','画一片叶子','三天后再观察']},
+    {id:'sci-float-sink',title:'沉浮小实验',domain:'science',focus:['nature','logic'],minutes:15,steps:['猜想谁浮谁沉','放入验证','分成两排','总结发现']},
+    {id:'sci-shadow',title:'影子捉迷藏',domain:'science',focus:['nature'],minutes:15,steps:['手影小狗兔子','影子何时变长','踩影子','为什么有影子？']},
+    {id:'art-finger-paint',title:'手指点画春天',domain:'art',focus:['draw'],minutes:20,steps:['手指点花瓣','掌印树冠','编一句小故事','冰箱画展']},
+    {id:'art-sing-clap',title:'节奏小乐队',domain:'art',focus:['music'],minutes:15,steps:['模仿节奏','跟歌打拍子','轻轻/重重','孩子当指挥']},
+    {id:'art-collage',title:'撕贴拼贴画',domain:'art',focus:['craft','draw'],minutes:20,steps:['撕彩纸片','拼房子小花','涂胶粘贴','给作品起名']},
+    {id:'art-mood-draw',title:'今天的心情色',domain:'art',focus:['draw','speak'],minutes:12,steps:['心里是什么颜色？','自由涂满','说为什么选它','贴心情墙']},
+    {id:'wk-outdoor-walk',title:'小区自然漫步',domain:'health',focus:['nature','motor','speak'],minutes:40,weekendBoost:true,steps:['慢走观察','捡3片不同叶子','数台阶路灯','贴进观察本']},
+    {id:'wk-story-theater',title:'家庭故事剧场',domain:'language',focus:['speak','read','social'],minutes:35,weekendBoost:true,steps:['选熟悉的故事','分配角色','允许即兴改词','互相说喜欢的点']},
+    {id:'wk-bake-count',title:'亲子小面点',domain:'science',focus:['math','life'],minutes:40,weekendBoost:true,steps:['数材料','揉压成形','比较大小','观察计时']},
+    {id:'wk-hanzi-poster',title:'我的汉字海报',domain:'language',focus:['hanzi','draw'],minutes:30,weekendBoost:true,steps:['挑5个本周字','每字配小画','贴成海报讲解','挂每天路过处']},
+    {id:'wk-english-circle',title:'English Circle Time',domain:'language',focus:['english','speak'],minutes:25,weekendBoost:true,steps:['唱Hello歌','复习颜色动物数字','Show me…指令','中文总结']},
+    {id:'wk-block-city',title:'积木城市工程',domain:'science',focus:['logic','math','craft'],minutes:35,weekendBoost:true,steps:['建一条路或桥','比较高低长短数量','建筑起名编号','玩偶住进城市']},
+    {id:'wk-help-family',title:'家务小帮手',domain:'social',focus:['life','social'],minutes:25,weekendBoost:true,steps:['选力所能及的事','分步示范','一起做并聊天','具体表扬']},
+    {id:'art-clay',title:'彩泥变变变',domain:'art',focus:['craft'],minutes:30,weekendBoost:true,steps:['搓圆搓长压扁','拼毛毛虫或花','编名字','收藏展示']},
+    {id:'health-stretch',title:'亲子瑜伽拉伸',domain:'health',focus:['motor'],minutes:20,steps:['猫牛式树式','吸气抬手呼气放下','当镜子互模','躺下休息1分钟']},
+    {id:'logic-matching',title:'翻牌配对游戏',domain:'science',focus:['logic','hanzi'],minutes:15,steps:['背面朝上排网格','翻两张找一对','配对时说出内容','数谁的多']},
+    {id:'open-tower',title:'谁能搭得更高',domain:'science',focus:['logic','math'],minutes:15,steps:['同样材料往上叠','比高度','失败分析原因','合作搭世界第一高塔'],tip:'比的是办法，鼓励大胆尝试。'},
+    {id:'open-obstacle',title:'客厅障碍闯关',domain:'health',focus:['motor','logic'],minutes:20,steps:['设计钻跨绕跳','轮流挑战与裁判','和自己比进步','孩子发明新关卡']},
+    {id:'open-rocket',title:'纸筒小火箭',domain:'science',focus:['nature','craft'],minutes:20,steps:['装饰纸筒','说飞去哪里','倒数发射','怎样飞更远？']},
+    {id:'open-map',title:'家庭藏宝图',domain:'science',focus:['logic','draw'],minutes:25,steps:['选起点终点','画箭头和叉叉','一人藏一人寻','交换角色']},
+    {id:'open-mud-kitchen',title:'泥巴/沙土实验室',domain:'science',focus:['nature','life'],minutes:30,weekendBoost:true,steps:['允许弄脏','干沙湿沙对比','挖河道引水','洗手也是练习'],tip:'脏一点的探索记得更牢。'},
+    {id:'open-race',title:'短跑与折返挑战',domain:'health',focus:['motor'],minutes:15,steps:['起跑与安全冲刺','折返跑','和自己的昨天比','放松呼吸']},
+    {id:'open-leader',title:'今天我指挥',domain:'social',focus:['social','speak','logic'],minutes:18,steps:['孩子当队长','家长认真听指令','说清楚先后','轮流当队长']},
+    {id:'open-machine',title:'斜坡滚滚乐',domain:'science',focus:['math','logic','nature'],minutes:18,steps:['书搭斜坡','比谁滚得远','坡越陡会怎样？','加挡板改方向']},
+    {id:'open-badge',title:'勇敢尝试徽章',domain:'social',focus:['social','life'],minutes:12,steps:['想挑战的小事','完成贴徽章','家长也分享害怕','试了就很棒']},
+    {id:'brave-stop',title:'大声说“停”的魔法',domain:'social',focus:['social','speak'],minutes:15,materials:'玩偶两个',steps:['演抢玩具场景','双手前推大声：停！我不喜欢这样！','练习说3遍，音量越来越大','说了仍不停→离开+告诉大人','夸：“你声音很稳，这就是勇敢。”'],guide:'敢于表达需要、维护合理权益',tip:'家里先练熟。不要求打赢，要求：说出口+走开+求助。'},
+    {id:'brave-teacher',title:'报告老师小剧场',domain:'social',focus:['social','speak'],minutes:15,steps:['椅子当老师办公桌','练：老师，XX打我/抢我东西，我很不舒服。','补充时间地点经过','老师角色：谢谢你告诉我，我会处理。','交换角色学会倾听求助'],tip:'告诉老师不是告状，是保护自己。'},
+    {id:'brave-body-rules',title:'身体边界红绿灯',domain:'social',focus:['social','life'],minutes:12,steps:['绿灯：欢迎的接触','黄灯：不确定可以拒绝','红灯：打掐碰隐私→拒绝离开','写出她的红灯清单贴家里','被欺负一定要告诉大人，不会被骂']},
+    {id:'brave-scene-roleplay',title:'幼儿园情景演练',domain:'social',focus:['social','speak','logic'],minutes:18,steps:['排队被推→请别推我+告诉老师','玩具被抢→请还给我→找老师','被起外号→我不喜欢→走开+记住是谁','朋友被欺负→陪她去告诉大人','针对最难说出口的一句多练'],tip:'一次1–2个情景，重复比讲道理有效。'},
+    {id:'brave-voice-meter',title:'音量勇气表',domain:'language',focus:['speak','social'],minutes:10,steps:['蚊子音/普通/勇敢大声','练：请把书还给我。','讨论各场合用哪档','客厅挑战勇敢大声，家人鼓掌']},
+    {id:'brave-trusted-adults',title:'我的安全大人名单',domain:'social',focus:['social','life'],minutes:12,steps:['列出可求助的人','画符号贴固定位置','练：我需要帮助。','约定家里永远站在她这边']},
+    {id:'brave-story-talk',title:'故事里的勇敢选择',domain:'language',focus:['listen','social','speak'],minutes:15,steps:['讲被欺负的小故事','停下来问：可以怎么做？','列2种办法：说停/走开/告诉大人','不敢说就和朋友一起去','画“勇敢的自己”']},
+    {id:'brave-power-pose',title:'超人站姿充电',domain:'health',focus:['motor','speak'],minutes:8,steps:['双手叉腰抬头挺胸20秒','深呼吸三次','喊：我可以保护自己！我可以说出来！','上学前当充电']}
+  ];
+  const CHOICE=[
+    {id:'choice-build',label:'我想搭建',hint:'积木、纸箱、火箭、斜坡…',minutes:20},
+    {id:'choice-move',label:'我想动起来',hint:'闯关、跳、跑、平衡…',minutes:20},
+    {id:'choice-story',label:'我想讲故事/认字',hint:'绘本、汉字寻宝、角色扮演…',minutes:15},
+    {id:'choice-create',label:'我想画/做/演',hint:'颜料、彩泥、节奏、剧场…',minutes:20},
+    {id:'choice-ask',label:'我想问为什么',hint:'沉浮、影子、植物、形状…',minutes:15},
+    {id:'choice-help',label:'我想帮忙/当队长',hint:'家务、发指令、分享时刻…',minutes:15}
+  ];
+  const PARENT_TIPS=['先共情再聊天：她若说幼儿园不开心，先抱一抱，再请 AI 讲相关故事。','AI 讲完别急着教育；问一句“你最喜欢哪一段？”就够。','恐怖元素出现时，直接说“我们不讲吓人的，换成勇敢帮助别人”。','跟读、音量、选择题都是练习；她沉默也很正常。','固定晚安点名，比天天长故事更利于入睡。'];
+  const STORIES=[
+    {id:'night-mascot',title:'黑猫警长的晚安巡逻',minutes:'10–15 分钟',tags:['黑猫警长','长故事','睡前'],scene:'一天结束时，森林要关灯休息，警长最后一次巡逻。',prompt:'你是一位温柔会讲故事的儿童故事讲述人。请和一个 4 岁、梦想成为警察、超级喜欢黑猫警长的小女孩聊天。\n\n今晚讲一个完整的睡前长故事：《黑猫警长的晚安巡逻》。\n\n要求：\n1. 用黑猫警长做主角，语气亲切、勇敢但不吓人；不要血腥、追杀、恐怖细节。\n2. 故事分 4–5 幕：出发巡逻 → 遇到需要帮助的小动物 → 小小难题 → 团结解决 → 回到警局说晚安。\n3. 每一幕停一下，问孩子一个简单选择或感受问题，根据她的回答再往下讲。\n4. 穿插：帮助别人、遵守规则、有事要说出来、团队合作。\n5. 结尾让她成为“小小见习警员”，得到鼓励，轻声道晚安。\n6. 中文，短句，3–4 岁能懂；睡前不要太兴奋。\n\n现在从第一幕开始，先简短介绍今晚任务，并提出第一个互动问题。',parentNote:'家长可代答或鼓励她自己说，像互动广播剧。'},
+    {id:'brave-report',title:'去警察局说清楚',minutes:'8–12 分钟',tags:['勇敢表达','求助','互动'],scene:'练习“不舒服时告诉大人/老师”的安全感故事。',prompt:'请扮演会讲互动故事的 AI 伙伴，听众是一位 4 岁、想当警察、喜欢黑猫警长的小女孩。\n\n今晚故事主题：《去警察局说清楚》——不是讲危险，而是讲“说出来会被帮助”。\n\n情节方向：\n- 小动物在幼儿园遇到不开心的事，一开始不敢说。\n- 黑猫警长告诉她：告诉老师和警察不是告状，是求助。\n- 一起练习三句话：“停，我不喜欢这样。”“我要走开了。”“老师，请帮帮我。”\n- 最后问题被温柔解决，她获得“勇气徽章”。\n\n互动：讲两句就停，邀请她跟读；多肯定；不要说“怎么不打回去”。\n结尾问：明天如果需要帮助，你最想找谁？\n\n现在开始，先邀请她认识“勇气任务”，并请她说第一句。',parentNote:'对应“受欺负不会说”的成长重点，可每天换一句练。'},
+    {id:'choice-adventure',title:'你来当一日所长',minutes:'12–20 分钟',tags:['选择','逻辑','长互动'],scene:'她当指挥，警长听她的——强化自主与表达。',prompt:'你是儿童互动故事 AI。4 岁女孩梦想当警察，喜欢黑猫警长，希望故事长一点、她能做决定。\n\n今晚故事：《你来当一日所长》。\n- 她是森林警察局的“一日小所长”，黑猫警长是助手。\n- 3 个小任务，每个二选一，没有标准答案，故事自动圆上。\n- 警长肯定她的决定，并让她用一句话发布命令。\n- 轻轻融入：数数、分类、认简单汉字（安/人/口）。\n- 结束授予所长徽章，问她最开心的是什么。\n\n现在欢迎她入职，并给出第一个二选一任务。',parentNote:'她选什么都不要否定，故事会跟着走。'},
+    {id:'forest-case',title:'森林小案件：谁弄倒了花盆',minutes:'10–15 分钟',tags:['逻辑','观察','推理'],scene:'温和推理，像儿童侦探游戏。',prompt:'请为 4 岁、爱黑猫警长的小女孩讲互动推理故事《谁弄倒了花盆？》\n\n- 案件温和：花盆倒了，无人受伤。\n- 3 条线索一次一条，每次都问她觉得说明什么。\n- 真相可以是意外，强调“弄清楚比责怪更重要”。\n- 融入观察与数学：数脚印、比长短、说先后。\n- 结束一起扶好花盆；语气温柔，适合睡前。\n\n现在介绍案件并给出第一条线索。',parentNote:'练逻辑，也练“意外≠自己不好”。'},
+    {id:'good-night-roll-call',title:'警局晚安点名',minutes:'5–8 分钟',tags:['短故事','安抚','仪式'],scene:'睡觉前固定仪式，比长故事更收心。',prompt:'你是晚安安抚型故事 AI。听众：4 岁女孩，想当警察，喜欢黑猫警长。\n\n《警局晚安点名》很短很暖：\n1. 警长轻轻点名小伙伴说晚安（可让她补充名字）。\n2. 点到她时，请她说自己名字，并说“今天我也很棒”。\n3. 一起回顾她做得好的三件小事。\n4. 灯光变暗，三句轻声晚安。\n5. 不要新的刺激问题；语速慢，句子短。\n\n现在开始点名，先点小兔子，并邀请她一起说晚安。',parentNote:'已困的夜晚用这支，建立睡前仪式。'},
+    {id:'teamwork-calls',title:'一起呼叫支援',minutes:'10–14 分钟',tags:['合作','英语','表达'],scene:'警察不是孤胆英雄，学会求助与合作。',prompt:'和 4 岁、梦想成为警察的小女孩讲互动故事《一起呼叫支援》。\n- 黑猫警长需要大家帮忙。\n- 强调：勇敢也包括请人帮忙。\n- 练习：“报告，我是××，我需要帮助，我在××地方。”\n- 可轻轻加入 Help! / Thank you!（愿意才跟读）。\n- 结尾合作完成任务，一起庆祝。\n\n现在开始：雨后小路需要清理……邀请她第一次呼叫支援。',parentNote:'把“求助”和英雄故事绑定，降低羞耻感。'},
+    {id:'badge-of-kindness',title:'善良徽章',minutes:'8–12 分钟',tags:['共情','社会'],scene:'警察保护大家，也温柔对待他人。',prompt:'请讲互动睡前故事《善良徽章》，听众：4 岁女孩，喜欢黑猫警长。\n\n核心：警察徽章不只代表厉害，也代表温柔地保护大家。\n- 有人犯了小错，警长帮助对方改正而不是大吼。\n- 讨论怎样说话既坚定又不凶。\n- 她颁发“善良徽章”，结尾给自己画一枚想象徽章。\n\n每段停一下问小问题。现在开场：警长的徽章在月光下闪光……请她猜是什么事。',parentNote:'建立“强者也可以温柔”的警察形象。'},
+    {id:'free-long-form',title:'开放式长故事（可续集）',minutes:'15–25 分钟',tags:['长故事','续集','可每日'],scene:'像连续剧，每天接着讲，她决定下一集。',prompt:'你是擅长儿童长篇互动故事的 AI。固定主角：黑猫警长 + 一位 4 岁的“小小警员”（这位小女孩）。\n\n今晚请生成/继续一个轻松、勇敢、温暖的森林警察局长篇故事：\n- 若她提到上一集，一定要接住。\n- 每 2–3 段停下来问：接下来想去哪里？要相信谁？\n- 自然融入汉字词卡、点数、分类、简单英语。\n- 风格像黑猫警长：正义、团结、机智，无恐怖画面。\n- 认可她的警察梦：警察要学习、锻炼身体、会保护自己也会求助。\n- 结尾可开放：“下一集你想接什么？”\n\n现在开始本集，取一个好听的标题，并提出第一个互动问题。',parentNote:'最适合她爱长故事/连续剧的偏好，每天续用。'}
+  ];
+  function ageInfo(now){
+    const daysToFour=Math.max(0,Math.ceil((TURNS4-now)/86400000));
+    const turnedFour=now>=TURNS4;
+    const months=(now.getFullYear()-BIRTHDAY.getFullYear())*12+(now.getMonth()-BIRTHDAY.getMonth())-(now.getDate()<BIRTHDAY.getDate()?1:0);
+    return{months:Math.max(0,months),daysToFour,turnedFour,displayAge:turnedFour?'4 岁':Math.floor(months/12)+' 岁 '+(months%12)+' 个月'};
+  }
+  function isWeekend(d){const x=d.getDay();return x===0||x===6}
+  function budget(d){return isWeekend(d)?300:90}
+  function key(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+  function seed(k){let h=2166136261;for(let i=0;i<k.length;i++){h^=k.charCodeAt(i);h=Math.imul(h,16777619)}return function(){h+=0x6d2b79f5;let t=h;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
+  function shuffle(a,rnd){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));const t=b[i];b[i]=b[j];b[j]=t}return b}
+  function buildPlan(now){
+    const k=key(now),rnd=seed(k),weekend=isWeekend(now),bud=budget(now),age=ageInfo(now);
+    const pool=ACT.slice();const domains=['health','language','social','science','art'];
+    const picked=[],used=new Set(),hits=new Set();
+    function score(a){let s=rnd();
+      if(weekend&&a.weekendBoost)s+=2.5;if(!weekend&&a.minutes>25)s-=1.2;if(!weekend&&a.minutes<=15)s+=.4;
+      if(a.id.indexOf('brave-')===0)s+=weekend?3.2:2.8;
+      if(a.focus.some(function(f){return PRIO.indexOf(f)>=0}))s+=1.6;
+      s+=a.focus.filter(function(f){return !hits.has(f)}).length*.35;
+      s-=picked.filter(function(p){return p.domain===a.domain}).length*.25;
+      if(a.weekendBoost&&!weekend)s-=2;return s}
+    const target=weekend?7:4,softMax=weekend?320:100;
+    const brave=pool.filter(function(a){return a.id.indexOf('brave-')===0}).sort(function(x,y){return score(y)-score(x)})[0];
+    if(brave){picked.push(brave);used.add(brave.id);brave.focus.forEach(function(f){hits.add(f)})}
+    const must=weekend?domains:shuffle(domains,rnd).slice(0,4);
+    must.forEach(function(domain){
+      const c=pool.filter(function(a){return a.domain===domain&&!used.has(a.id)}).sort(function(x,y){return score(y)-score(x)});
+      if(c[0]){picked.push(c[0]);used.add(c[0].id);c[0].focus.forEach(function(f){hits.add(f)})}});
+    let total=picked.reduce(function(s,a){return s+a.minutes},0);
+    let loops=0;
+    while(picked.length<target&&loops<40){loops++;
+      const c=pool.filter(function(a){return !used.has(a.id)}).map(function(a){return{a:a,s:score(a)}}).sort(function(x,y){return y.s-x.s});
+      let added=false;
+      for(let i=0;i<c.length;i++){const a=c[i].a;if(total+a.minutes<=softMax){picked.push(a);used.add(a.id);a.focus.forEach(function(f){hits.add(f)});total+=a.minutes;added=true;break}}
+      if(!added){const fb=pool.filter(function(a){return !used.has(a.id)&&a.minutes+total<=softMax+20}).sort(function(x,y){return x.minutes-y.minutes})[0];if(!fb)break;picked.push(fb);used.add(fb.id);total+=fb.minutes}
+    }
+    while(total>bud+(weekend?40:15)&&picked.length>3){
+      let idx=-1,mm=-1;
+      for(let i=0;i<picked.length;i++){if(picked[i].minutes>10&&picked[i].id.indexOf('brave-')!==0&&picked[i].minutes>mm){mm=picked[i].minutes;idx=i}}
+      if(idx<0)break;total-=picked[idx].minutes;picked.splice(idx,1)}
+    picked.sort(function(a,b){const ab=a.id.indexOf('brave-')===0?1:0,bb=b.id.indexOf('brave-')===0?1:0;if(ab!==bb)return bb-ab;
+      const ap=a.focus.filter(function(f){return PRIO.indexOf(f)>=0}).length;const bp=b.focus.filter(function(f){return PRIO.indexOf(f)>=0}).length;
+      if(weekend)return (b.weekendBoost?1:0)-(a.weekendBoost?1:0)||b.minutes-a.minutes;return bp-ap||a.minutes-b.minutes});
+    const dm=domains.map(function(domain){const minutes=picked.filter(function(p){return p.domain===domain}).reduce(function(s,a){return s+a.minutes},0);const m=DOMAIN[domain];return{domain:domain,name:m.name,color:m.color,emoji:m.emoji,minutes:minutes}});
+    const br=picked.filter(function(a){return a.id.indexOf('brave-')===0})[0];
+    return{dateKey:k,weekdayLabel:WEEK[now.getDay()],dateLabel:now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日',isWeekend:weekend,budgetMinutes:bud,plannedMinutes:total,slots:picked,domainMinutes:dm,age:age,choice:CHOICE[Math.floor(rnd()*CHOICE.length)],braveFocus:br?{title:br.title,hint:'练习说“停”、走开、告诉老师/家长。告诉大人不是告状，是保护自己。'}:{title:'今日勇气一句',hint:'睡前回忆：今天有没有“说出来就很棒”的事？没有也没关系，明天继续练。'}};
+  }
+  function progressKey(){return 'grow-up-progress-v1'}
+  function loadProg(){try{return JSON.parse(localStorage.getItem(progressKey())||'{}')}catch(e){return{}}}
+  function saveProg(p){localStorage.setItem(progressKey(),JSON.stringify(p))}
+  function toggle(id,dk){const p=loadProg();const set=new Set(p[dk]||[]);if(set.has(id))set.delete(id);else set.add(id);p[dk]=Array.from(set);saveProg(p);return p}
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  const WEEK=['周日','周一','周二','周三','周四','周五','周六'];
+  let tab='today',openId=null,copiedId=null,progMsg=null,prog=loadProg();
+  function exportProg(){
+      const now=new Date();
+      const k=now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0');
+      const data={app:'grow-up',version:1,exportedAt:now.toISOString(),progress:loadProg(),meta:{birthday:'2022-10-18',turnsFour:'2026-10-18',note:'小芽成长打卡数据'}};
+      const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='grow-up-progress-'+k+'.json';a.click();URL.revokeObjectURL(a.href);
+      progMsg='已导出 JSON，请妥善保存';prog=loadProg();render();
+    }
+    function importProg(file){
+      const fr=new FileReader();
+      fr.onload=function(){
+        try{
+          const parsed=JSON.parse(String(fr.result));
+          const next=parsed&&typeof parsed==='object'&&parsed.progress?parsed.progress:parsed;
+          if(!next||typeof next!=='object')throw 0;
+          const cleaned={};
+          Object.keys(next).forEach(function(kk){if(/^\d{4}-\d{2}-\d{2}$/.test(kk)&&Array.isArray(next[kk]))cleaned[kk]=next[kk].filter(function(x){return typeof x==='string'})});
+          const merged=Object.assign({},loadProg(),cleaned);saveProg(merged);prog=loadProg();
+          progMsg='已导入 '+Object.keys(cleaned).length+' 天记录';
+        }catch(e){progMsg='导入失败：请选择本 App 导出的 JSON'}
+        render();
+      };
+      fr.readAsText(file);
+    }
+  function render(){
+    const now=new Date(),plan=buildPlan(now),age=plan.age;
+    const doneList=prog[plan.dateKey]||[];
+    const doneCount=plan.slots.filter(function(s){return doneList.indexOf(s.id)>=0}).length+(doneList.indexOf(plan.choice.id)>=0?1:0);
+    const pct=Math.round(doneCount/(plan.slots.length+1)*100);
+    let main='';
+    if(tab==='today'){
+      const pills=plan.domainMinutes.filter(function(d){return d.minutes>0}).map(function(d){return '<span class="pill"><span class="orb" style="background:'+d.color+'"></span>'+esc(d.name)+'<span class="min">'+d.minutes+'′</span></span>'}).join('');
+      const bar=plan.domainMinutes.filter(function(d){return d.minutes>0}).map(function(d){return '<span style="width:'+(d.minutes/Math.max(plan.plannedMinutes,1)*100)+'%;background:'+d.color+'"></span>'}).join('');
+      const cards=plan.slots.map(function(s){
+        const m=DOMAIN[s.domain];const chips=s.focus.slice(0,4).map(function(f){return '<span class="chip">'+esc(FOCUS[f]||f)+'</span>'}).join('')+(s.focus.some(function(f){return PRIO.indexOf(f)>=0})?'<span class="chip focus">重点</span>':'');
+        const done=doneList.indexOf(s.id)>=0;const open=openId===s.id;
+        return '<article class="glass card'+(open?' open':'')+(done?' done':'')+'" data-id="'+s.id+'"><div class="card-head" data-open="'+s.id+'"><div class="orb-lg" style="--orb-color:'+m.color+'">'+m.emoji+'</div><div class="card-body"><h3 class="card-title">'+esc(s.title)+'</h3><div class="card-meta"><span class="chip" style="color:'+m.color+'">'+m.name+' · '+s.minutes+' 分钟</span>'+chips+'</div>'+(s.guide?'<p class="card-guide">《指南》：'+esc(s.guide)+'</p>':'')+'</div></div><ul class="card-steps">'+s.steps.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+(s.materials?'<li>材料：'+esc(s.materials)+'</li>':'')+'</ul><div class="card-foot"><div class="card-tip">'+esc(s.tip||'轻松玩就好，过程比结果重要。')+'</div><button type="button" class="check'+(done?' on':'')+'" data-check="'+s.id+'" aria-label="打卡">✓</button></div></article>';
+      }).join('');
+      const ch=plan.choice;const chDone=doneList.indexOf(ch.id)>=0;
+      cards+='<article class="glass card"><div class="card-head"><div class="orb-lg" style="--orb-color:var(--pink-soft)">🫧</div><div class="card-body"><h3 class="card-title">自选角 · '+esc(ch.label)+'</h3><div class="card-meta"><span class="chip focus">她来决定</span><span class="chip">约 '+ch.minutes+' 分钟</span></div><p class="card-guide">没有“男孩游戏 / 女孩游戏”。运动、搭建、科学、故事、创作、当队长——想试哪个就试哪个。今天可以试：'+esc(ch.hint)+'</p><ul class="card-steps always"><li>问：“你今天最想玩哪一种？”</li><li>让她先选方向，家长只配合</li><li>问“你发现了什么？”而不是教标准答案</li></ul></div></div><div class="card-foot"><div class="card-tip">选择本身就是成长。</div><button type="button" class="check'+(chDone?' on':'')+'" data-check="'+ch.id+'" aria-label="自选角打卡">✓</button></div></article>';
+      main='<div class="date-row"><span class="wd">'+plan.weekdayLabel+'</span><span class="full">'+plan.dateLabel+' · '+(plan.isWeekend?'周末长时段':'工作日 1.5 小时')+'</span></div>'+
+        '<section class="glass ribbon"><div class="ribbon-top"><div><h2>今日时间花环</h2><div class="ribbon-pills">'+pills+'</div></div><div class="budget">'+plan.plannedMinutes+'<span style="font-size:13px;color:var(--muted)"> / '+plan.budgetMinutes+' 分</span></div></div><div class="ribbon-bar">'+bar+'</div><div style="margin-top:10px;font-size:12px;color:var(--muted);font-weight:600">已完成 '+doneCount+'/'+(plan.slots.length+1)+' · 汉字/英语/数学/逻辑 + 勇敢表达 + 自选</div><div class="progress-bar"><i style="width:'+pct+'%"></i></div></section>'+
+        '<section class="glass brave"><h3>💪 今日勇气练习 · '+esc(plan.braveFocus.title)+'</h3><p>'+esc(plan.braveFocus.hint)+'</p><div class="guide-tag">家里先练：说“停” → 走开 → 告诉老师/家长</div></section>'+
+        '<div class="section-title"><h2>今日活动</h2><span class="hint">点开看步骤 · 圆圈打卡</span></div><div class="cards">'+cards+'</div>';
+    } else if(tab==='domains'){
+      const rows=Object.keys(DOMAIN).map(function(k){const m=DOMAIN[k];return '<section class="glass page-block"><div style="display:flex;gap:12px;align-items:center;margin-bottom:8px"><div class="orb-lg" style="--orb-color:'+m.color+'">'+m.emoji+'</div><div><h3 style="color:'+m.color+'">'+m.name+'</h3><p style="font-size:12px">'+m.line+'</p></div></div><ul><li>3–4 岁与 4–4.5 岁目标对照《3-6岁儿童学习与发展指南》</li><li>在游戏中发展，不追求超前刷题</li></ul></section>'}).join('');
+      main='<section class="glass page-block" style="border-color:rgba(255,45,149,.25)"><h3 style="color:var(--pink-deep)">不设限的成长</h3><p>粉色只是界面颜色，不是内容边界。运动、搭建、科学实验、当队长、沙土探索，和认字、英语、画画同样重要。每天有一角由<strong style="color:var(--ink)">她自己选</strong>。</p><div class="guide-tag">想试什么就试什么</div></section>'+
+        '<section class="glass page-block" style="border-color:rgba(255,45,149,.35)"><h3 style="color:var(--pink-deep)">💪 勇敢表达</h3><p>若她胆小、被欺负不敢说，请把「说清楚 + 会求助」当作和认字一样重要的能力。</p><ul><li>① 大声说：<strong>停！我不喜欢这样。</strong></li><li>② 离开现场，不硬拼。</li><li>③ <strong>告诉老师或家长</strong>——不是告状，是求助。</li><li>④ 家里永远相信她，不先批评“怎么不打回去”。</li></ul></section>'+
+        '<div class="section-title"><h2>五大领域</h2><span class="hint">对照《指南》</span></div>'+rows+
+        '<section class="glass page-block"><h3>本期重点方向</h3><p style="margin-top:8px"><strong style="color:var(--pink-deep)">汉字</strong> · 生活场景认字与图卡，不要求书写量。</p><p style="margin-top:8px"><strong style="color:var(--pink-deep)">英语</strong> · 听说先行，儿歌与单词游戏。</p><p style="margin-top:8px"><strong style="color:var(--pink-deep)">数学</strong> · 点数、比较、规律、形状。</p><p style="margin-top:8px"><strong style="color:var(--pink-deep)">逻辑</strong> · 分类、排序、迷宫、因果。</p><p style="margin-top:8px">这些<strong>不是全部</strong>，五领域同等重要。</p></section>';
+    } else if(tab==='week'){
+      const start=new Date(now);const dow=start.getDay();start.setDate(start.getDate()+(dow===0?-6:1-dow));
+      let rows='';
+      for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const p=buildPlan(d);
+        const bar=p.domainMinutes.filter(function(x){return x.minutes>0}).map(function(x){return '<span style="width:'+(x.minutes/Math.max(p.plannedMinutes,1)*100)+'%;background:'+x.color+'"></span>'}).join('');
+        rows+='<section class="glass week-day"><div class="row"><div class="day">'+p.weekdayLabel+' <span style="margin-left:8px;font-weight:500;color:var(--muted);font-size:12px">'+p.dateLabel.slice(5)+'</span></div><div class="mins">'+p.plannedMinutes+'′ '+(p.isWeekend?'· 周末':'')+'</div></div><div class="ribbon-bar" style="height:8px;margin:0 0 10px">'+bar+'</div><div class="week-titles">'+p.slots.map(function(s){return esc(s.title)}).join(' · ')+'<div style="margin-top:4px;color:var(--pink-deep);font-weight:600">🫧 自选：'+esc(p.choice.label)+'</div></div></section>'}
+      main='<div class="section-title"><h2>本周节律</h2><span class="hint">工作日 90 分 · 周末 300 分</span></div><section class="glass page-block"><h3>节奏说明</h3><p>周一到周五短而稳，穿插重点与勇敢练习、自选角。周末是更长的开放探索，孩子参与做计划。</p></section>'+rows;
+    } else if(tab==='stories'){
+      const cards=STORIES.map(function(s){
+        return '<article class="glass card open"><div class="card-head"><div class="orb-lg" style="--orb-color:#FF6B9D">👮‍♀️</div><div class="card-body"><h3 class="card-title">'+esc(s.title)+'</h3><div class="card-meta"><span class="chip" style="color:var(--pink)">'+esc(s.minutes)+'</span>'+s.tags.map(function(t){return '<span class="chip">'+esc(t)+'</span>'}).join('')+'</div><p class="card-guide">'+esc(s.scene)+'</p></div></div><ul class="card-steps always"><li style="counter-increment:none;white-space:pre-wrap"><strong style="color:var(--pink-deep)">提示词（可复制）</strong>\n\n'+esc(s.prompt)+'</li><li style="counter-increment:none">家长提示：'+esc(s.parentNote)+'</li></ul><div class="card-foot"><div class="card-tip">'+(copiedId===s.id?'已复制，去聊天框粘贴吧':'复制后发给豆包/元宝/千问即可')+'</div><button type="button" class="check on" style="width:auto;min-width:44px;padding:0 14px;border-radius:999px;font-size:13px" data-copy="'+s.id+'">'+(copiedId===s.id?'✓ 已复制':'复制')+'</button></div></article>';
+      }).join('');
+      main='<div class="section-title"><h2>睡前故事提示词</h2><span class="hint">豆包 / 元宝 / 千问</span></div>'+
+        '<section class="glass page-block" style="border-color:rgba(255,45,149,.3)"><h3 style="color:var(--pink-deep)">给家长</h3><p>女儿想当警察，喜欢黑猫警长，爱长故事和互动故事。提示词可直接粘贴；AI 会边讲边问。重点：安全感、勇敢说清楚、会求助、合作与善良。</p><ul>'+PARENT_TIPS.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul></section><div class="cards">'+cards+'</div>';
+    } else {
+      const keys=Object.keys(prog).sort().slice(-14).reverse();
+      let all=0;Object.keys(prog).forEach(function(k){all+= (prog[k]||[]).length});
+      const map={health:0,language:0,social:0,science:0,art:0};
+      Object.keys(prog).forEach(function(k){(prog[k]||[]).forEach(function(id){const a=ACT.filter(function(x){return x.id===id})[0];if(a)map[a.domain]++})});
+      const max=Math.max(1,map.health,map.language,map.social,map.science,map.art);
+      const bars=Object.keys(DOMAIN).map(function(k){const m=DOMAIN[k],n=map[k]||0;return '<div style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span>'+m.emoji+' '+m.name+'</span><span style="color:var(--muted)">'+n+' 次</span></div><div class="progress-bar"><i style="width:'+(n/max*100)+'%;background:'+m.color+'"></i></div></div>'}).join('');
+      const list=keys.length?'<div>'+keys.map(function(k){return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.5)"><span style="font-weight:600;font-size:14px">'+k+'</span><span style="color:var(--pink);font-family:ui-monospace,SF Mono,Menlo,monospace;font-weight:700">'+(prog[k]||[]).length+' 项</span></div>'}).join('')+'</div>':'<div style="padding:20px 0;text-align:center;color:var(--muted);font-size:14px">还没有打卡。今天任意完成一项就会出现在这里。</div>';
+      main='<div class="section-title"><h2>成长足迹</h2><span class="hint">仅保存在本机</span></div><div class="stat-grid"><div class="stat"><div class="num">'+doneCount+'</div><div class="lbl">今日完成</div></div><div class="stat"><div class="num">'+all+'</div><div class="lbl">累计打卡</div></div><div class="stat"><div class="num">'+Object.keys(prog).length+'</div><div class="lbl">有记录天数</div></div><div class="stat"><div class="num" style="font-size:20px;padding-top:4px">'+(age.turnedFour?'4 岁':age.daysToFour+'d')+'</div><div class="lbl">'+(age.turnedFour?'年龄':'距 4 岁')+'</div></div></div>'+
+        '<section class="glass page-block"><h3>数据备份（JSON）</h3><p>打卡仅存在本机浏览器。换手机或清缓存前请先导出，新设备再导入。</p><div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap"><button type="button" id="btn-export" style="min-height:44px;padding:0 16px;border-radius:999px;background:linear-gradient(135deg,var(--pink),var(--pink-soft));color:#fff;font-weight:700;font-size:14px">导出 JSON</button><button type="button" id="btn-import" style="min-height:44px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.8);border:1px solid rgba(255,107,157,.35);color:var(--pink-deep);font-weight:700;font-size:14px">导入 JSON</button><input id="file-import" type="file" accept="application/json,.json" hidden /></div>'+(progMsg?'<div class="guide-tag" style="margin-top:10px">'+esc(progMsg)+'</div>':'')+'<p style="margin-top:10px;font-size:12px">当前 <strong style="color:var(--pink)">'+Object.keys(prog).length+'</strong> 天数据 · 活动库 <strong style="color:var(--pink)">'+ACT.length+'</strong> 条（每日按日期自动组合）</p></section>'+
+        '<section class="glass page-block"><h3>领域覆盖（累计）</h3><p>覆盖是参考不是排名。长期尽量五领域都碰到。</p>'+bars+'</section>'+
+        '<section class="glass page-block"><h3>最近有记录的日子</h3>'+list+'</section>'+
+        '<section class="glass page-block"><h3>给家长的一句话</h3><p>目标不是学了多少字，而是她更愿意表达、更敢尝试、更会想办法。若她胆小：先共情，再一起练“说停—走开—告诉老师”。她可以文静，也可以大声维护自己——都对。</p></section>';
+    }
+    const tabs=[['today','今日','🌸'],['domains','领域','🧩'],['stories','故事','👮‍♀️'],['progress','成长','💗']];
+    const nav='<nav class="glass tabbar">'+tabs.map(function(t){return '<button type="button" class="tab'+(tab===t[0]?' active':'')+'" data-tab="'+t[0]+'"><span class="ico">'+t[2]+'</span>'+t[1]+'</button>'}).join('')+'</nav>';
+    document.getElementById('app').innerHTML='<header class="glass glass-header"><div class="brand"><div class="brand-kicker">3–6 岁成长指南</div><h1 class="brand-title">小芽成长</h1></div><div class="age-badge"><div class="days">'+(age.turnedFour?'已满 4 岁 🎂':'距 4 岁 · '+age.daysToFour+' 天')+'</div><div class="meta">'+age.displayAge+'</div></div></header><main>'+main+'</main>'+nav;
+  }
+  document.getElementById('app').addEventListener('click',function(e){
+    const t=e.target;
+    const tabBtn=t.closest('[data-tab]');
+    if(tabBtn){tab=tabBtn.getAttribute('data-tab');openId=null;copiedId=null;render();return}
+    const copyBtn=t.closest('[data-copy]');
+    if(copyBtn){const id=copyBtn.getAttribute('data-copy');const s=STORIES.filter(function(x){return x.id===id})[0];
+      if(s&&navigator.clipboard){navigator.clipboard.writeText(s.prompt).then(function(){copiedId=id;render();setTimeout(function(){copiedId=null;render()},1600)}).catch(function(){copiedId=id;render()})}
+      else if(s){const ta=document.createElement('textarea');ta.value=s.prompt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(err){}document.body.removeChild(ta);copiedId=id;render();setTimeout(function(){copiedId=null;render()},1600)}
+      return}
+    const check=t.closest('[data-check]');
+    if(check){const id=check.getAttribute('data-check');const now=new Date();prog=toggle(id,key(now));render();return}
+    if(t.id==='btn-export'){exportProg();return}
+    if(t.id==='btn-import'){const fi=document.getElementById('file-import');if(fi)fi.click();return}
+    const open=t.closest('[data-open]');
+    if(open){const id=open.getAttribute('data-open');openId=(openId===id?null:id);render();return}
+  });
+  render();
+  document.addEventListener('change',function(e){
+    const el=e.target;
+    if(el&&el.id==='file-import'&&el.files&&el.files[0]){importProg(el.files[0]);el.value=''}
+  });
+})();
+  </script>
+</body>
+</html>

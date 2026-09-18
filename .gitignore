@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+.DS_Store
+*.log
+*.err
+.env*
+.vercel
+next-env.d.ts
+_ver.txt
+_git*.txt
+nodev.txt
+nodeerr.txt
