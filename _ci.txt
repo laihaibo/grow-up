@@ -1,2 +1,7 @@
-[main c1ed39c] ﻿ci: drop packageManager; pin pnpm only in Actions
- 2 files changed, 3 insertions(+), 2 deletions(-)
+[main a49b492] ﻿feat: sprout favicon, parent coach scripts, larger activity bank
+ 9 files changed, 870 insertions(+), 13 deletions(-)
+ create mode 100644 app/icon.svg
+ create mode 100644 favicon.svg
+ create mode 100644 lib/activities-extra.ts
+ create mode 100644 lib/coach.ts
+ create mode 100644 public/favicon.svg
