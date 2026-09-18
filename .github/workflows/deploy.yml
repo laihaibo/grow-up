@@ -21,9 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # version comes only from package.json "packageManager" (pnpm@11.22.0)
+      # version only here; package.json has no packageManager field
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 11
 
       - name: Setup Node
         uses: actions/setup-node@v4
