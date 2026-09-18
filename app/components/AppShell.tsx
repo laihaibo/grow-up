@@ -12,11 +12,20 @@ const tabs = [
   { href: '/progress/', label: '成长', ico: '💗' },
 ]
 
+function normalize(path: string) {
+  let p = path || '/'
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+  if (basePath && p.startsWith(basePath)) {
+    p = p.slice(basePath.length) || '/'
+  }
+  if (!p.startsWith('/')) p = `/${p}`
+  return p.endsWith('/') ? p : `${p}/`
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const age = ageInfo(new Date())
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
-  const norm = (p: string) => (p.endsWith('/') ? p : `${p}/`)
+  const current = normalize(pathname || '/')
 
   return (
     <div className="app">
@@ -37,10 +46,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <nav className="glass tabbar" aria-label="主导航">
         {tabs.map((t) => {
-          const href = `${basePath}${t.href}`
-          const active = norm(pathname || '/') === norm(t.href) || pathname === t.href
+          const active = current === normalize(t.href)
+          // Next.js Link applies next.config basePath — do not prefix again
           return (
-            <Link key={t.href} href={href} className={`tab${active ? ' active' : ''}`}>
+            <Link
+              key={t.href}
+              href={t.href}
+              className={`tab${active ? ' active' : ''}`}
+              prefetch={false}
+            >
               <span className="ico" aria-hidden>
                 {t.ico}
               </span>

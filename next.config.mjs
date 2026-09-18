@@ -7,8 +7,9 @@ const nextConfig = {
   output: 'export',
   trailingSlash: true,
   images: { unoptimized: true },
+  // basePath alone is enough for GH Pages project site; do NOT also set assetPrefix
+  // (assetPrefix + basePath can double-prefix /_next and break tabs/assets)
   basePath: basePath || undefined,
-  assetPrefix: basePath ? `${basePath}/` : undefined,
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
