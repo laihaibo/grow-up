@@ -982,13 +982,13 @@ export function getActivity(id: string) {
   return ALL_ACTIVITIES.find((a) => a.id === id)
 }
 
-// —— merge extra bank + parent coach scripts (after all exports avoid circular values in type zone) ——
+// —— merge extra bank + parent coach scripts ——
 import { EXTRA_ACTIVITIES } from './activities-extra'
 import { coachFor } from './coach'
 
 export const ALL_ACTIVITIES: Activity[] = [...activities, ...EXTRA_ACTIVITIES].map((a) => ({
   ...a,
-  coach: a.coach || coachFor(a.id, a.tip),
+  coach: a.coach || coachFor(a.id, a.tip, a),
 }))
 
 export const ACTIVITY_COUNT = ALL_ACTIVITIES.length

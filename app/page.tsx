@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { DOMAIN_META, FOCUS_META, PRIORITY_FOCUS } from '@/lib/activities'
+import { DOMAIN_META, PRIORITY_FOCUS } from '@/lib/activities'
 import { buildDayPlan, type PlanSlot } from '@/lib/plan'
 import { isDone, loadProgress, toggleActivity, type ProgressStore } from '@/lib/storage'
 
@@ -90,7 +90,7 @@ export default function TodayPage() {
 
       <div className="section-title">
         <h2>今日跟练</h2>
-        <span className="hint">准备 · 话术 · 观察点 · 降级</span>
+        <span className="hint">点标题展开 · 话术可照读</span>
       </div>
 
       <div className="cards">
@@ -120,21 +120,21 @@ export default function TodayPage() {
                 没有“男孩游戏 / 女孩游戏”。运动、搭建、科学、故事、创作、当队长——想试哪个就试哪个。
                 今天可以试：{plan.choice.hint}
               </p>
-              <ul className="card-steps always" style={{ display: 'flex' }}>
-                <li style={{ counterIncrement: 'none' }}>
-                  <strong style={{ color: 'var(--pink-deep)' }}>跟练</strong>
-                  问：「你今天最想玩哪一种？」
+              <ul className="card-steps open-list" style={{ display: 'flex' }}>
+                <li className="coach-setup">
+                  <strong>准备</strong>
+                  自选角 · 约 {plan.choice.minutes} 分钟 · 让她决定方向
                 </li>
-                <li style={{ counterIncrement: 'none' }}>
-                  <strong style={{ color: 'var(--pink-deep)' }}>跟练</strong>
-                  让她先选方向，家长只配合不改主意。
+                <li>
+                  <strong>跟练 1</strong>
+                  问：「你今天最想玩哪一种？{plan.choice.hint}」
                 </li>
-                <li style={{ counterIncrement: 'none' }}>
-                  <strong style={{ color: 'var(--pink-deep)' }}>跟练</strong>
-                  过程中问「你发现了什么？」，不教标准答案。
+                <li>
+                  <strong>跟练 2</strong>
+                  她先选，家长只配合不改主意；过程中问「你发现了什么？」
                 </li>
-                <li style={{ counterIncrement: 'none' }}>
-                  <strong style={{ color: 'var(--pink-deep)' }}>不想做时</strong>
+                <li>
+                  <strong>不想做时</strong>
                   缩短到 5 分钟，或改成她点名你配合的游戏。
                 </li>
               </ul>
@@ -161,6 +161,7 @@ export default function TodayPage() {
 function ActivityCard({
   slot,
   done,
+  open,
   onOpen,
   onToggle,
 }: {
@@ -172,16 +173,23 @@ function ActivityCard({
 }) {
   const meta = DOMAIN_META[slot.domain]
   const hasPriority = slot.focus.some((f) => (PRIORITY_FOCUS as string[]).includes(f))
-  const coach = slot.coach || {
-    setup: slot.materials || '材料备好，选她状态轻松的时间。',
-    script: slot.steps,
-    watch: '兴趣与情绪；完成度比标准答案重要。',
-    ifStuck: slot.tip || '不想做就缩短时间，明天再试。',
-  }
+  const coach = slot.coach
 
   return (
-    <article className={`glass card open${done ? ' done' : ''}`}>
-      <div className="card-head">
+    <article className={`glass card${open ? ' open' : ''}${done ? ' done' : ''}`}>
+      <div
+        className="card-head"
+        onClick={onOpen}
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onOpen()
+          }
+        }}
+      >
         <div className="orb-lg" style={{ ['--orb-color' as string]: meta.color }}>
           <span>{meta.emoji}</span>
         </div>
@@ -192,41 +200,45 @@ function ActivityCard({
               {meta.name} · {slot.minutes} 分钟
             </span>
             {hasPriority && <span className="chip focus">重点</span>}
-            <span className="chip focus">跟练</span>
+            <span className="chip focus">{open ? '收起跟练' : '展开跟练'}</span>
           </div>
+          {!open && coach && <p className="card-guide">准备：{coach.setup}</p>}
         </div>
       </div>
 
-      {/* 只保留跟练 */}
-      <ul className="card-steps always" style={{ display: 'flex' }}>
-        <li style={{ counterIncrement: 'none', background: 'rgba(255,45,149,0.08)' }}>
-          <strong style={{ color: 'var(--pink-deep)' }}>准备</strong>
-          {coach.setup}
-        </li>
-        {coach.script.map((line, i) => (
-          <li key={`sc-${i}`} style={{ counterIncrement: 'none' }}>
-            <strong style={{ color: 'var(--pink-deep)' }}>跟练 {i + 1}</strong>
-            {line}
+      {open && coach && (
+        <ul className="card-steps open-list">
+          <li className="coach-setup">
+            <strong>准备</strong>
+            {coach.setup}
           </li>
-        ))}
-        <li style={{ counterIncrement: 'none' }}>
-          <strong style={{ color: 'var(--pink-deep)' }}>观察点</strong>
-          {coach.watch}
-        </li>
-        <li style={{ counterIncrement: 'none' }}>
-          <strong style={{ color: 'var(--pink-deep)' }}>不想做时</strong>
-          {coach.ifStuck}
-        </li>
-        {coach.bonus && (
-          <li style={{ counterIncrement: 'none' }}>
-            <strong style={{ color: 'var(--pink-deep)' }}>加分挑战</strong>
-            {coach.bonus}
+          {coach.script.map((line, i) => (
+            <li key={`sc-${i}`}>
+              <strong>跟练 {i + 1}</strong>
+              {line}
+            </li>
+          ))}
+          <li>
+            <strong>观察点</strong>
+            {coach.watch}
           </li>
-        )}
-      </ul>
+          <li>
+            <strong>不想做时</strong>
+            {coach.ifStuck}
+          </li>
+          {coach.bonus && (
+            <li>
+              <strong>加分挑战</strong>
+              {coach.bonus}
+            </li>
+          )}
+        </ul>
+      )}
 
       <div className="card-foot">
-        <div className="card-tip">照着「跟练」说和做即可，过程比结果重要。</div>
+        <div className="card-tip">
+          {open ? '照着「跟练」说和做即可' : '点标题展开完整跟练话术'}
+        </div>
         <button
           type="button"
           className={`check${done ? ' on' : ''}`}

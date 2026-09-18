@@ -56,10 +56,11 @@
     .chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(255,255,255,.7);color:var(--muted);border:1px solid rgba(255,255,255,.8)}
     .chip.focus{color:var(--pink-deep);background:rgba(255,45,149,.1);border-color:rgba(255,45,149,.18)}
     .card-guide{margin:0;font-size:13px;line-height:1.5;color:var(--muted)}
-    .card-steps{margin:10px 0 0;padding:0;list-style:none;display:none;flex-direction:column;gap:6px;counter-reset:step}
-    .card.open .card-steps,.card-steps.always{display:flex}
-    .card-steps li{font-size:13px;line-height:1.45;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.55);color:var(--ink);counter-increment:step}
-    .card-steps li::before{content:counter(step) ". ";color:var(--pink);font-weight:700;font-family:ui-monospace,"SF Mono",Menlo,monospace}
+    .card-steps,.card-steps.open-list{margin:10px 0 0;padding:0;list-style:none;display:none;flex-direction:column;gap:6px}
+    .card.open .card-steps,.card-steps.open-list{display:flex}
+    .card-steps li,.card-steps.open-list li{font-size:13px;line-height:1.5;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.55);color:var(--ink)}
+    .card-steps.open-list li strong,.card-steps li strong{display:block;color:var(--pink-deep);font-size:11px;font-weight:700;margin-bottom:2px}
+    .card-steps li.coach-setup,.card-steps.open-list li.coach-setup{background:rgba(255,45,149,.08)}
     .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:10px}
     .card-tip{font-size:12px;color:var(--pink-deep);flex:1;line-height:1.4}
     .check{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.75);border:2px solid rgba(255,107,157,.45);color:transparent;font-weight:800;flex-shrink:0}
@@ -194,7 +195,24 @@
 'mix-hanzi-hopscotch':{setup:'胶带/粉笔写格子字。',script:['格子里写本周认的字','跳到哪格念哪个字','念对前进，集齐5字成功'],watch:'运动+认字是否开心。',ifStuck:'格子改少，字改熟。'},
 'mix-night-review':{setup:'睡前安静时刻。',script:['今天做了什么好玩的？','有没有一次「说出来」？','明天最想玩什么？','晚安，警长小芽。'],watch:'情绪与表达意愿。',ifStuck:'不想说就抱着安静一会儿。'}
   };
-  function coachOf(a){return a.coach||COACH[a.id]||COACH_FALLBACK(a.tip)}
+  function coachFrom(a){
+  const mats=a.materials||'不用特殊材料，家里/小区就能开始';
+  const steps=a.steps&&a.steps.length?a.steps:['先示范一次，再让她上手'];
+  const script=[
+    '开场蹲下平视：「今天玩《'+a.title+'》，大约 '+a.minutes+' 分钟。妈妈和你一起，规则可以商量。」',
+    '材料与场景：'+mats+'。摆好后指给她看，避免边找边催。',
+    ...steps.map(function(step,i){return '第 '+(i+1)+' 步照做：'+step+'。先说出这一步的目标，示范一次，再说「轮到你」。'}),
+    a.tip?'跟练提醒：'+a.tip:'她若自己改成别的玩法，先跟她的玩法，清单明天再完成也来得及。',
+    '结束具体表扬：「你刚才____（描述你看到的行为）做得很好。」必须是真实细节。',
+    '回问：「最喜欢哪一步？明天还想玩，还是换自选角？」'
+  ];
+  return{setup:'约 '+a.minutes+' 分钟 · '+mats+' · 手机静音',script:script,watch:'是否有实质动作/把话说完整；兴趣掉下来就停。',ifStuck:a.tip?('卡住时：'+a.tip+' 也可以只做前2步。'):'卡住时：时长砍半；你做给她看；或她当老师指挥你。'};
+}
+  // inject specific coaches from the detailed bank when available
+  Object.keys(COACH).forEach(function(k){/* hand scripts already in COACH */});
+  // expand COACH with the detailed scripts matching lib/coach.ts for key cards
+  COACH['hz-shape-cards']=COACH['hz-shape-cards']||{setup:'桌面铺软垫；6组图+字（日月山水火人）；约15分钟。',script:['蹲下平视：「今天字宝宝要回家，你当小管家。先看图——这是什么？」','「太阳——日。手指转一圈，你也来。」','「翻一张字卡，念出来，再拍到对应的图上。」','成功击掌：「回家成功！山——比一个三尖峰。」','配错：「再摸摸笔画，换一张试试，没关系。」','收尾：「今天回家的字有日、月、山……最喜欢哪个？」'],watch:'愿不愿意指认；能否说图名。',ifStuck:'只玩图找图；或她出题你找；5分钟停也算完成。',bonus:'闭眼摸凹凸猜字。'};
+  function coachOf(a){return COACH[a.id]||coachFrom(a)}
   const STORIES=[
     {id:'night-mascot',title:'黑猫警长的晚安巡逻',minutes:'10–15 分钟',tags:['黑猫警长','长故事','睡前'],scene:'一天结束时，森林要关灯休息，警长最后一次巡逻。',prompt:'你是一位温柔会讲故事的儿童故事讲述人。请和一个 4 岁、梦想成为警察、超级喜欢黑猫警长的小女孩聊天。\n\n今晚讲一个完整的睡前长故事：《黑猫警长的晚安巡逻》。\n\n要求：\n1. 用黑猫警长做主角，语气亲切、勇敢但不吓人；不要血腥、追杀、恐怖细节。\n2. 故事分 4–5 幕：出发巡逻 → 遇到需要帮助的小动物 → 小小难题 → 团结解决 → 回到警局说晚安。\n3. 每一幕停一下，问孩子一个简单选择或感受问题，根据她的回答再往下讲。\n4. 穿插：帮助别人、遵守规则、有事要说出来、团队合作。\n5. 结尾让她成为“小小见习警员”，得到鼓励，轻声道晚安。\n6. 中文，短句，3–4 岁能懂；睡前不要太兴奋。\n\n现在从第一幕开始，先简短介绍今晚任务，并提出第一个互动问题。',parentNote:'家长可代答或鼓励她自己说，像互动广播剧。'},
     {id:'brave-report',title:'去警察局说清楚',minutes:'8–12 分钟',tags:['勇敢表达','求助','互动'],scene:'练习“不舒服时告诉大人/老师”的安全感故事。',prompt:'请扮演会讲互动故事的 AI 伙伴，听众是一位 4 岁、想当警察、喜欢黑猫警长的小女孩。\n\n今晚故事主题：《去警察局说清楚》——不是讲危险，而是讲“说出来会被帮助”。\n\n情节方向：\n- 小动物在幼儿园遇到不开心的事，一开始不敢说。\n- 黑猫警长告诉她：告诉老师和警察不是告状，是求助。\n- 一起练习三句话：“停，我不喜欢这样。”“我要走开了。”“老师，请帮帮我。”\n- 最后问题被温柔解决，她获得“勇气徽章”。\n\n互动：讲两句就停，邀请她跟读；多肯定；不要说“怎么不打回去”。\n结尾问：明天如果需要帮助，你最想找谁？\n\n现在开始，先邀请她认识“勇气任务”，并请她说第一句。',parentNote:'对应“受欺负不会说”的成长重点，可每天换一句练。'},
@@ -294,21 +312,22 @@
       const pills=plan.domainMinutes.filter(function(d){return d.minutes>0}).map(function(d){return '<span class="pill"><span class="orb" style="background:'+d.color+'"></span>'+esc(d.name)+'<span class="min">'+d.minutes+'′</span></span>'}).join('');
       const bar=plan.domainMinutes.filter(function(d){return d.minutes>0}).map(function(d){return '<span style="width:'+(d.minutes/Math.max(plan.plannedMinutes,1)*100)+'%;background:'+d.color+'"></span>'}).join('');
       const cards=plan.slots.map(function(s){
-        const m=DOMAIN[s.domain];const chips=(s.focus.some(function(f){return PRIO.indexOf(f)>=0})?'<span class="chip focus">重点</span>':'')+'<span class="chip focus">跟练</span>';
-        const done=doneList.indexOf(s.id)>=0;const co=coachOf(s);
-        const stepsHtml='<li style="counter-increment:none;background:rgba(255,45,149,.08)"><strong style="color:var(--pink-deep)">准备</strong>'+esc(co.setup)+'</li>'+
-          co.script.map(function(line,i){return '<li style="counter-increment:none"><strong style="color:var(--pink-deep)">跟练 '+(i+1)+'</strong>'+esc(line)+'</li>'}).join('')+
-          '<li style="counter-increment:none"><strong style="color:var(--pink-deep)">观察点</strong>'+esc(co.watch)+'</li>'+
-          '<li style="counter-increment:none"><strong style="color:var(--pink-deep)">不想做时</strong>'+esc(co.ifStuck)+'</li>'+
-          (co.bonus?'<li style="counter-increment:none"><strong style="color:var(--pink-deep)">加分挑战</strong>'+esc(co.bonus)+'</li>':'');
-        return '<article class="glass card open'+(done?' done':'')+'"><div class="card-head"><div class="orb-lg" style="--orb-color:'+m.color+'">'+m.emoji+'</div><div class="card-body"><h3 class="card-title">'+esc(s.title)+'</h3><div class="card-meta"><span class="chip" style="color:'+m.color+'">'+m.name+' · '+s.minutes+' 分钟</span>'+chips+'</div></div></div><ul class="card-steps always">'+stepsHtml+'</ul><div class="card-foot"><div class="card-tip">照着「跟练」说和做即可，过程比结果重要。</div><button type="button" class="check'+(done?' on':'')+'" data-check="'+s.id+'" aria-label="打卡">✓</button></div></article>';
+        const m=DOMAIN[s.domain];const chips=(s.focus.some(function(f){return PRIO.indexOf(f)>=0})?'<span class="chip focus">重点</span>':'')+'<span class="chip focus">'+(openId===s.id?'收起跟练':'展开跟练')+'</span>';
+        const done=doneList.indexOf(s.id)>=0;const open=openId===s.id;const co=coachOf(s);
+        const body=open?('<ul class="card-steps open-list" style="display:flex"><li class="coach-setup"><strong>准备</strong>'+esc(co.setup)+'</li>'+
+          co.script.map(function(line,i){return '<li><strong>跟练 '+(i+1)+'</strong>'+esc(line)+'</li>'}).join('')+
+          '<li><strong>观察点</strong>'+esc(co.watch)+'</li>'+
+          '<li><strong>不想做时</strong>'+esc(co.ifStuck)+'</li>'+
+          (co.bonus?'<li><strong>加分挑战</strong>'+esc(co.bonus)+'</li>':'')+'</ul>')
+          :('<p class="card-guide">准备：'+esc(co.setup)+'</p>');
+        return '<article class="glass card'+(open?' open':'')+(done?' done':'')+'"><div class="card-head" data-open="'+s.id+'" role="button"><div class="orb-lg" style="--orb-color:'+m.color+'">'+m.emoji+'</div><div class="card-body"><h3 class="card-title">'+esc(s.title)+'</h3><div class="card-meta"><span class="chip" style="color:'+m.color+'">'+m.name+' · '+s.minutes+' 分钟</span>'+chips+'</div>'+body+'</div></div><div class="card-foot"><div class="card-tip">'+(open?'照着「跟练」说和做即可':'点标题展开完整跟练话术')+'</div><button type="button" class="check'+(done?' on':'')+'" data-check="'+s.id+'" aria-label="打卡">✓</button></div></article>';
       }).join('');
       const ch=plan.choice;const chDone=doneList.indexOf(ch.id)>=0;
       cards+='<article class="glass card"><div class="card-head"><div class="orb-lg" style="--orb-color:var(--pink-soft)">🫧</div><div class="card-body"><h3 class="card-title">自选角 · '+esc(ch.label)+'</h3><div class="card-meta"><span class="chip focus">她来决定</span><span class="chip">约 '+ch.minutes+' 分钟</span></div><p class="card-guide">没有“男孩游戏 / 女孩游戏”。运动、搭建、科学、故事、创作、当队长——想试哪个就试哪个。今天可以试：'+esc(ch.hint)+'</p><ul class="card-steps always"><li>问：“你今天最想玩哪一种？”</li><li>让她先选方向，家长只配合</li><li>问“你发现了什么？”而不是教标准答案</li></ul></div></div><div class="card-foot"><div class="card-tip">选择本身就是成长。</div><button type="button" class="check'+(chDone?' on':'')+'" data-check="'+ch.id+'" aria-label="自选角打卡">✓</button></div></article>';
       main='<div class="date-row"><span class="wd">'+plan.weekdayLabel+'</span><span class="full">'+plan.dateLabel+' · '+(plan.isWeekend?'周末长时段':'工作日 1.5 小时')+'</span></div>'+
         '<section class="glass ribbon"><div class="ribbon-top"><div><h2>今日时间花环</h2><div class="ribbon-pills">'+pills+'</div></div><div class="budget">'+plan.plannedMinutes+'<span style="font-size:13px;color:var(--muted)"> / '+plan.budgetMinutes+' 分</span></div></div><div class="ribbon-bar">'+bar+'</div><div style="margin-top:10px;font-size:12px;color:var(--muted);font-weight:600">已完成 '+doneCount+'/'+(plan.slots.length+1)+' · 汉字/英语/数学/逻辑 + 勇敢表达 + 自选</div><div class="progress-bar"><i style="width:'+pct+'%"></i></div></section>'+
         '<section class="glass brave"><h3>💪 今日勇气练习 · '+esc(plan.braveFocus.title)+'</h3><p>'+esc(plan.braveFocus.hint)+'</p><div class="guide-tag">家里先练：说“停” → 走开 → 告诉老师/家长</div></section>'+
-        '<div class="section-title"><h2>今日跟练</h2><span class="hint">准备 · 话术 · 观察点 · 降级</span></div><div class="cards">'+cards+'</div>';
+        '<div class="section-title"><h2>今日跟练</h2><span class="hint">点标题展开 · 话术可照读</span></div><div class="cards">'+cards+'</div>';
     } else if(tab==='domains'){
       const rows=Object.keys(DOMAIN).map(function(k){const m=DOMAIN[k];return '<section class="glass page-block"><div style="display:flex;gap:12px;align-items:center;margin-bottom:8px"><div class="orb-lg" style="--orb-color:'+m.color+'">'+m.emoji+'</div><div><h3 style="color:'+m.color+'">'+m.name+'</h3><p style="font-size:12px">'+m.line+'</p></div></div><ul><li>3–4 岁与 4–4.5 岁目标对照《3-6岁儿童学习与发展指南》</li><li>在游戏中发展，不追求超前刷题</li></ul></section>'}).join('');
       main='<section class="glass page-block" style="border-color:rgba(255,45,149,.25)"><h3 style="color:var(--pink-deep)">不设限的成长</h3><p>粉色只是界面颜色，不是内容边界。运动、搭建、科学实验、当队长、沙土探索，和认字、英语、画画同样重要。每天有一角由<strong style="color:var(--ink)">她自己选</strong>。</p><div class="guide-tag">想试什么就试什么</div></section>'+
