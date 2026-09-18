@@ -1,2 +1,3 @@
-[main db45f76] ﻿fix: restore card collapse; concrete coach scripts from activity content
- 5 files changed, 336 insertions(+), 207 deletions(-)
+[main cf14338] ﻿docs: polish README as open-source showcase + MIT license
+ 2 files changed, 256 insertions(+), 28 deletions(-)
+ create mode 100644 LICENSE
