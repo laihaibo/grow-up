@@ -11,6 +11,7 @@ import {
   type Domain,
   type FocusTag,
 } from './activities'
+import { missionForDate, type MissionDay } from './mission'
 
 export type ChoicePrompt = (typeof CHOICE_PROMPTS)[number]
 
@@ -34,6 +35,9 @@ export type DayPlan = {
   choice: ChoicePrompt
   /** 勇敢表达：近期成长重点之一，尽量每日露出 */
   braveFocus?: { title: string; hint: string }
+  /** 防诱拐演练：仅窗口日非空 */
+  mission?: MissionDay | null
+  missionActivity?: PlanSlot | null
 }
 
 const WEEK_CN = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
@@ -82,7 +86,12 @@ export function buildDayPlan(now = new Date()): DayPlan {
   const budget = minutesBudget(now)
   const age = ageInfo(now)
 
+  const missionDay = missionForDate(now)
   const pool = ALL_ACTIVITIES.filter((a) => {
+    // 演练活动只在窗口内、且仅当日那条进入候选池
+    if (a.id.startsWith('mission-')) {
+      return missionDay ? a.id === missionDay.activityId : false
+    }
     return true
   })
 
@@ -98,6 +107,10 @@ export function buildDayPlan(now = new Date()): DayPlan {
     if (!weekend && a.minutes <= 15) s += 0.4
     // 近期重点：胆小、受欺负不会说 → 勇敢表达活动优先
     if (a.id.startsWith('brave-')) s += weekend ? 3.2 : 2.8
+    // 演练窗口内：当日 mission 活动优先
+    if (a.id.startsWith('mission-') && missionDay && a.id === missionDay.activityId) {
+      s += weekend ? 3.0 : 2.6
+    }
     const hasPrio = a.focus.some((f) => PRIORITY_FOCUS.includes(f))
     if (hasPrio) s += 1.6
     const newFocus = a.focus.filter((f) => !focusHit.has(f))
@@ -123,6 +136,16 @@ export function buildDayPlan(now = new Date()): DayPlan {
     picked.push(braveSeed)
     used.add(braveSeed.id)
     braveSeed.focus.forEach((f) => focusHit.add(f))
+  }
+
+  // seed: 演练窗口内注入当日防诱拐任务（确定性，按日历）
+  if (missionDay) {
+    const mAct = pool.find((a) => a.id === missionDay.activityId)
+    if (mAct && !used.has(mAct.id)) {
+      picked.push(mAct)
+      used.add(mAct.id)
+      mAct.focus.forEach((f) => focusHit.add(f))
+    }
   }
 
   // seed one activity per must-domain
@@ -177,17 +200,17 @@ export function buildDayPlan(now = new Date()): DayPlan {
   while (total > budget + (weekend ? 40 : 15) && picked.length > 3) {
     const idx = picked
       .map((a, i) => ({ a, i }))
-      .filter(({ a }) => a.minutes > 10 && !a.id.startsWith('brave-'))
+      .filter(({ a }) => a.minutes > 10 && !a.id.startsWith('brave-') && !a.id.startsWith('mission-'))
       .sort((x, y) => y.a.minutes - x.a.minutes)[0]?.i
     if (idx === undefined) break
     total -= picked[idx].minutes
     picked.splice(idx, 1)
   }
 
-  // order: brave + priority language/math first on weekday
+  // order: mission / brave + priority language/math first on weekday
   picked.sort((a, b) => {
-    const ab = a.id.startsWith('brave-') ? 1 : 0
-    const bb = b.id.startsWith('brave-') ? 1 : 0
+    const ab = a.id.startsWith('mission-') ? 2 : a.id.startsWith('brave-') ? 1 : 0
+    const bb = b.id.startsWith('mission-') ? 2 : b.id.startsWith('brave-') ? 1 : 0
     if (ab !== bb) return bb - ab
     const ap = a.focus.filter((f) => PRIORITY_FOCUS.includes(f)).length
     const bp = b.focus.filter((f) => PRIORITY_FOCUS.includes(f)).length
@@ -207,6 +230,7 @@ export function buildDayPlan(now = new Date()): DayPlan {
   })
 
   const brave = picked.find((a) => a.id.startsWith('brave-'))
+  const missionSlot = missionDay ? picked.find((a) => a.id === missionDay.activityId) || null : null
   return {
     dateKey: key,
     dateLabel: formatDateLabel(now),
@@ -231,6 +255,8 @@ export function buildDayPlan(now = new Date()): DayPlan {
           title: '今日勇气一句',
           hint: '睡前回忆：今天有没有一件“说出来就很棒”的事？没有也没关系，明天继续练。',
         },
+    mission: missionDay,
+    missionActivity: missionSlot,
   }
 }
 

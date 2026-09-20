@@ -58,6 +58,7 @@ Stagger card rise + check spring; honor `prefers-reduced-motion`.
 | `/` | 今日计划 + 自选角 + 勇气练习 |
 | `/domains` | 五大领域 + 《指南》 + 不设限/勇敢表达说明 |
 | `/stories` | 睡前 AI 故事提示词（黑猫警长 / 警察梦 / 互动长故事） |
+| `/mission` | 防诱拐演练任务（背诵原文 + 逐日角色扮演日程，窗口期） |
 | `/week` | 本周节律（保留，侧入口） |
 | `/progress` | 打卡与覆盖 |
 

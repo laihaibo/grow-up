@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { DOMAIN_META, PRIORITY_FOCUS } from '@/lib/activities'
 import { buildDayPlan, type PlanSlot } from '@/lib/plan'
 import { isDone, loadProgress, toggleActivity, type ProgressStore } from '@/lib/storage'
+import { daysUntilDrill } from '@/lib/mission'
 
 export default function TodayPage() {
   const plan = useMemo(() => buildDayPlan(new Date()), [])
@@ -70,6 +72,30 @@ export default function TodayPage() {
           <i style={{ width: `${pct}%` }} />
         </div>
       </section>
+
+      {plan.mission && (
+        <section
+          className="glass page-block"
+          style={{
+            marginBottom: 16,
+            borderColor: 'rgba(255,45,149,0.22)',
+          }}
+        >
+          <h3 style={{ color: 'var(--pink-deep)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            👮 防诱拐演练 · {plan.mission.offsetLabel} {plan.mission.title}
+          </h3>
+          <p>
+            {daysUntilDrill() === 0
+              ? '今天是演习日。'
+              : `距演习还有 ${daysUntilDrill()} 天。`}
+            {plan.mission.brief}
+            {plan.missionActivity ? ` 今日跟练：${plan.missionActivity.title}（约 ${plan.missionActivity.minutes} 分钟）` : ''}
+          </p>
+          <div className="guide-tag">
+            <Link href="/mission/">打开演练任务页 · 背诵原文 + 四日话术</Link>
+          </div>
+        </section>
+      )}
 
       {plan.braveFocus && (
         <section

@@ -1,0 +1,14 @@
+speech_match=true
+speech_value=小朋友们，大家好呀，我是小一班的赖潇语。老师和爸爸妈妈都告诉我，陌生人给的零食、糖果不能要。陌生人说带我去找爸爸妈妈我们也不能跟他走。遇到不认识的人，要赶紧找老师，保护好自己，不随便跟陌生人离开哦。
+window_0920=true
+window_0923=true
+window_0924=false
+for_0921=mission-snack
+activity mission-brief exists=true title=认识警员任务 coach=true
+activity mission-snack exists=true title=零食防线演练 coach=true
+activity mission-follow exists=true title=跟人走陷阱演练 coach=true
+activity mission-drill exists=true title=演习日彩排 coach=true
+plan_0921_mission=mission-snack slot=mission-snack
+plan_0921_ids=mission-snack,brave-scene-roleplay,brave-power-pose,brave-story-talk,brave-teacher,art-mood-draw
+plan_1010_mission=null activity=null
+plan_1010_has_mission_slot=false
