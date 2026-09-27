@@ -1,3 +1,5 @@
+import { CHILD } from './child'
+
 export type Domain = 'health' | 'language' | 'social' | 'science' | 'art'
 
 export type FocusTag =
@@ -97,15 +99,11 @@ export const FOCUS_META: Record<FocusTag, { name: string; short: string }> = {
 
 export const PRIORITY_FOCUS: FocusTag[] = ['hanzi', 'english', 'math', 'logic']
 
-/** BIRTHDAY: 2026-10-18 — child turns 4 */
-export const BIRTHDAY = new Date(2026, 9, 18)
-
 export function ageInfo(now = new Date()) {
-  const ms = BIRTHDAY.getTime() - now.getTime()
+  const ms = CHILD.fourthBirthday.getTime() - now.getTime()
   const daysToFour = Math.max(0, Math.ceil(ms / 86400000))
   const turnedFour = ms <= 0
-  // months since birth assuming birthday is 4th on 2026-10-18 → born 2022-10-18
-  const born = new Date(2022, 9, 18)
+  const born = CHILD.birth
   const months =
     (now.getFullYear() - born.getFullYear()) * 12 + (now.getMonth() - born.getMonth()) - (now.getDate() < born.getDate() ? 1 : 0)
   return { months: Math.max(0, months), daysToFour, turnedFour, displayAge: turnedFour ? '4 岁' : `${Math.floor(months / 12)} 岁 ${months % 12} 个月` }
@@ -964,7 +962,7 @@ const activities: Activity[] = [
   },
 ]
 
-/** 每日自选角：孩子自主选择的方向（不预设性别） */
+/** 每日自选角：孩子自主选择的方向（不预设性别），18 个方向轮换 */
 export const CHOICE_PROMPTS = [
   { id: 'choice-build', label: '我想搭建', hint: '积木、纸箱、火箭、斜坡…', domain: 'science' as Domain, focus: ['logic'] as FocusTag[], minutes: 20 },
   { id: 'choice-move', label: '我想动起来', hint: '闯关、跳、跑、平衡…', domain: 'health' as Domain, focus: ['motor'] as FocusTag[], minutes: 20 },
@@ -972,6 +970,18 @@ export const CHOICE_PROMPTS = [
   { id: 'choice-create', label: '我想画/做/演', hint: '颜料、彩泥、节奏、剧场…', domain: 'art' as Domain, focus: ['draw', 'craft'] as FocusTag[], minutes: 20 },
   { id: 'choice-ask', label: '我想问为什么', hint: '沉浮、影子、植物、形状…', domain: 'science' as Domain, focus: ['nature'] as FocusTag[], minutes: 15 },
   { id: 'choice-help', label: '我想帮忙/当队长', hint: '家务、发指令、分享时刻…', domain: 'social' as Domain, focus: ['social', 'life'] as FocusTag[], minutes: 15 },
+  { id: 'choice-lab', label: '我想做小实验', hint: '冰块融化、颜色混合、吹泡泡…', domain: 'science' as Domain, focus: ['nature'] as FocusTag[], minutes: 15 },
+  { id: 'choice-tools', label: '我想用真工具', hint: '剪刀、胶带、放大镜、小螺丝刀…', domain: 'science' as Domain, focus: ['craft', 'logic'] as FocusTag[], minutes: 20 },
+  { id: 'choice-teach', label: '我想当小老师', hint: '出题考家长、点名回答、批“作业”…', domain: 'language' as Domain, focus: ['speak', 'hanzi'] as FocusTag[], minutes: 15 },
+  { id: 'choice-explore', label: '我想去探险', hint: '小区新路线、藏宝地图、找不同的叶子…', domain: 'health' as Domain, focus: ['motor', 'nature'] as FocusTag[], minutes: 25 },
+  { id: 'choice-track', label: '我想搭轨道马路', hint: '轨道、多米诺、斜坡赛车…', domain: 'science' as Domain, focus: ['logic', 'math'] as FocusTag[], minutes: 20 },
+  { id: 'choice-water', label: '我想玩水玩沙', hint: '浇菜、沙堡、量杯倒水…', domain: 'science' as Domain, focus: ['nature', 'life'] as FocusTag[], minutes: 20 },
+  { id: 'choice-dance', label: '我想唱歌跳舞', hint: '编舞、打击乐、音乐剧片段…', domain: 'art' as Domain, focus: ['music'] as FocusTag[], minutes: 15 },
+  { id: 'choice-game', label: '我想玩桌游拼图', hint: '拼图、配对、飞行棋、扑克…', domain: 'science' as Domain, focus: ['logic'] as FocusTag[], minutes: 20 },
+  { id: 'choice-bugs', label: '我想观察虫虫', hint: '蚂蚁搬家、西瓜虫、蜗牛赛跑…', domain: 'science' as Domain, focus: ['nature'] as FocusTag[], minutes: 20 },
+  { id: 'choice-kitchen', label: '我想进厨房帮厨', hint: '洗菜、搅拌、摆盘、数饺子…', domain: 'social' as Domain, focus: ['life', 'math'] as FocusTag[], minutes: 20 },
+  { id: 'choice-show', label: '我想表演魔术剧', hint: '魔术、变装、手偶剧、皮影…', domain: 'art' as Domain, focus: ['speak', 'music'] as FocusTag[], minutes: 20 },
+  { id: 'choice-compete', label: '我想挑战比赛', hint: '赛跑、跳远记录赛、亲子接力…', domain: 'health' as Domain, focus: ['motor', 'math'] as FocusTag[], minutes: 15 },
 ]
 
 export function activitiesByDomain(domain: Domain) {
@@ -988,7 +998,8 @@ import { coachFor } from './coach'
 
 export const ALL_ACTIVITIES: Activity[] = [...activities, ...EXTRA_ACTIVITIES].map((a) => ({
   ...a,
-  coach: a.coach || coachFor(a.id, a.tip, a),
+  coach: a.coach || coachFor(a.id, a),
 }))
 
-export const ACTIVITY_COUNT = ALL_ACTIVITIES.length
+export const ACTIVITY_BY_ID = new Map(ALL_ACTIVITIES.map((a) => [a.id, a]))
+export const CHOICE_BY_ID = new Map(CHOICE_PROMPTS.map((c) => [c.id, c]))

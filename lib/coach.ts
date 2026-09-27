@@ -1,5 +1,5 @@
 import type { Activity } from './activities'
-import { CHILD_NAME, CLASS_NAME } from './mission'
+import { CHILD_NAME, CHILD_NICKNAME, CLASS_NAME } from './child'
 
 export type Coach = {
   setup: string
@@ -66,7 +66,7 @@ export const COACHES: Record<string, Coach> = {
   'mission-brief': {
     setup: '安静角落；可选贴纸当见习警员徽章；约 12 分钟；提前说清「我们玩警长任务，不是考试」。',
     script: [
-      '「小芽，幼儿园要防诱拐演习。你来当黑猫警长的见习警员，好不好？」',
+      `「${CHILD_NICKNAME}，幼儿园要防诱拐演习。你来当黑猫警长的见习警员，好不好？」`,
       '「今天任务叫认识警员口令。我读，你听，像听警局简报。」',
       '慢读全文一遍（见 /mission 原文），读完问：「听到哪一句了？」',
       '「口令有四条：介绍自己、零食不收、不跟人走、找老师。」',
@@ -130,7 +130,7 @@ export const COACHES: Record<string, Coach> = {
   'math-count-fruit': {
     setup: '15 个左右小物件；分 5 堆（1–5）；一个篮子当购物筐。',
     script: [
-      '「欢迎来到小芽超市，你当收银员，妈妈来买东西。」',
+      `「欢迎来到${CHILD_NICKNAME}超市，你当收银员，妈妈来买东西。」`,
       '「我要 3 个苹果。数出来放篮子——数对才能给我。」',
       '她数时轻声跟「一个、两个、三个」，手指让她点。',
       '数错：「一个一个再来，点到一个数一个，像小鸡啄米。」',
@@ -219,7 +219,7 @@ export const COACHES: Record<string, Coach> = {
   'en-food-menu': {
     setup: '玩具食物/图片：apple, milk, bread, egg；桌子当餐厅。',
     script: [
-      '「Welcome to 小芽餐厅。今天菜单有 apple, milk, bread, egg。」',
+      `「Welcome to ${CHILD_NICKNAME}餐厅。今天菜单有 apple, milk, bread, egg。」`,
       '指物带读 2 遍，让她跟一次或指一指。',
       '「你点餐：I want apple.（可只说 apple）」',
       '你当服务员：「Apple? Here you are.」递过去。',
@@ -263,12 +263,12 @@ export const COACHES: Record<string, Coach> = {
   'mix-night-review': {
     setup: '睡前灯暗；无屏幕；抱着或并排坐。',
     script: [
-      '「警局晚安点名：小芽，报告今天最开心的一件事。」',
+      `「警局晚安点名：${CHILD_NICKNAME}，报告今天最开心的一件事。」`,
       '「嗯，妈妈听到了。有没有一件有点难的事？」',
       '提到不开心 → 先抱：「谢谢你告诉我，你做得对。」先不教。',
       '「今天有没有练过『说出来』？哪怕很小的一次。」',
       '「明天最想玩什么？记在心里。」',
-      '「点名结束，任务完成。晚安，小芽。妈妈爱你。」',
+      `「点名结束，任务完成。晚安，${CHILD_NICKNAME}。妈妈爱你。」`,
     ],
     watch: '情绪是否安定；是否愿意开口。',
     ifStuck: '不想说 → 只做拥抱 + 三句晚安；或改说「谁帮了我」。',
@@ -319,16 +319,16 @@ export function coachFromActivity(a: Activity): Coach {
   return { setup: `约 ${a.minutes} 分钟 · ${mats} · 手机静音`, script, watch, ifStuck }
 }
 
-export function coachFor(id: string, fallbackTip?: string, activity?: Activity): Coach {
+export function coachFor(id: string, activity?: Activity): Coach {
   if (COACHES[id]) return COACHES[id]
-  if (activity) return coachFromActivity(activity)
-  return coachFromActivity({
-    id,
-    title: id,
-    domain: 'language',
-    focus: ['speak'],
-    minutes: 12,
-    steps: ['先示范，再让她做', '完成后回顾最喜欢哪一步'],
-    tip: fallbackTip,
-  })
+  return coachFromActivity(
+    activity || {
+      id,
+      title: id,
+      domain: 'language',
+      focus: ['speak'],
+      minutes: 12,
+      steps: ['先示范，再让她做', '完成后回顾最喜欢哪一步'],
+    },
+  )
 }

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "mimosa-hook-status/v1",
+  "recordedAt": "2026-09-27T00:11:00.289Z",
+  "sessionId": "sess_1462f8b4-e326-4e19-aa96-b928c23ed678",
+  "event": "PostToolUse",
+  "toolName": "Write",
+  "file": "C:/Users/momo/.zcode/cli/memories/projects/grow-up-606edb111b129b7c/memory/MEMORY.md",
+  "outcome": "clear",
+  "coverage": "complete",
+  "findingCount": 0,
+  "durationMs": 14,
+  "hostState": "hook_complete",
+  "reportHint": ".mimosa/reports/"
+}

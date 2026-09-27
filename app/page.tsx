@@ -1,20 +1,39 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { DOMAIN_META, PRIORITY_FOCUS } from '@/lib/activities'
-import { buildDayPlan, type PlanSlot } from '@/lib/plan'
-import { isDone, loadProgress, toggleActivity, type ProgressStore } from '@/lib/storage'
+import { DOMAIN_META, FOCUS_META, type FocusTag } from '@/lib/activities'
+import { buildDayPlan, dateKey, type PlanSlot } from '@/lib/plan'
+import {
+  excludePlanActivity,
+  getPlanAdjustFor,
+  isDone,
+  loadPlanAdjust,
+  loadProgress,
+  rerollPlan,
+  toggleActivity,
+  type PlanAdjustStore,
+  type ProgressStore,
+} from '@/lib/storage'
 import { daysUntilDrill } from '@/lib/mission'
 
 export default function TodayPage() {
-  const plan = useMemo(() => buildDayPlan(new Date()), [])
+  const [today] = useState(() => new Date())
+  const [mounted, setMounted] = useState(false)
   const [progress, setProgress] = useState<ProgressStore>({})
+  const [adjustStore, setAdjustStore] = useState<PlanAdjustStore>({})
   const [openId, setOpenId] = useState<string | null>(null)
+
+  const key = dateKey(today)
 
   useEffect(() => {
     setProgress(loadProgress())
+    setAdjustStore(loadPlanAdjust())
+    setMounted(true)
   }, [])
+
+  const adjust = getPlanAdjustFor(adjustStore, key)
+  const plan = buildDayPlan(today, mounted ? adjust : undefined)
 
   const doneCount = plan.slots.filter((s) => isDone(progress, plan.dateKey, s.id)).length + (isDone(progress, plan.dateKey, plan.choice.id) ? 1 : 0)
   const total = plan.slots.length + 1
@@ -24,11 +43,36 @@ export default function TodayPage() {
     setProgress(toggleActivity(plan.dateKey, id))
   }
 
+  function onReroll() {
+    setAdjustStore(rerollPlan(plan.dateKey))
+    setOpenId(null)
+  }
+
+  function onSwap(id: string) {
+    setAdjustStore(excludePlanActivity(plan.dateKey, id))
+    if (openId === id) setOpenId(null)
+  }
+
+  if (!mounted) {
+    return (
+      <main>
+        <div className="page-loading" role="status">
+          正在生成今日计划…
+        </div>
+      </main>
+    )
+  }
+
+  const coverage = plan.focusCoverage.slice(0, 6).map((f) => FOCUS_META[f].short)
+
   return (
     <main>
       <div className="date-row">
         <span className="wd">{plan.weekdayLabel}</span>
         <span className="full">{plan.dateLabel} · {plan.isWeekend ? '周末长时段' : '工作日 1.5 小时'}</span>
+        <button type="button" className="reroll-btn" onClick={onReroll} aria-label="换一批今日活动">
+          🔄 换一批
+        </button>
       </div>
 
       <section className="glass ribbon" aria-label="今日时间安排">
@@ -66,7 +110,8 @@ export default function TodayPage() {
           )}
         </div>
         <div style={{ marginTop: 10, fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>
-          已完成 {doneCount}/{plan.slots.length + 1} · 汉字/英语/数学/逻辑 + 勇敢表达 + 自选
+          已完成 {doneCount}/{total} · 今日主打「{FOCUS_META[plan.featuredFocus].name}」
+          {coverage.length > 0 && <span> · 覆盖 {coverage.join('、')}</span>}
         </div>
         <div className="progress-bar" aria-hidden>
           <i style={{ width: `${pct}%` }} />
@@ -124,10 +169,12 @@ export default function TodayPage() {
           <ActivityCard
             key={slot.id}
             slot={slot}
+            featuredFocus={plan.featuredFocus}
             done={isDone(progress, plan.dateKey, slot.id)}
             open={openId === slot.id}
             onOpen={() => setOpenId(openId === slot.id ? null : slot.id)}
             onToggle={() => onToggle(slot.id)}
+            onSwap={() => onSwap(slot.id)}
           />
         ))}
 
@@ -180,25 +227,33 @@ export default function TodayPage() {
           </div>
         </article>
       </div>
+
+      <div className="foot-links">
+        <Link href="/mission/">🚨 防诱拐演练任务页 · 随时可回看</Link>
+      </div>
     </main>
   )
 }
 
 function ActivityCard({
   slot,
+  featuredFocus,
   done,
   open,
   onOpen,
   onToggle,
+  onSwap,
 }: {
   slot: PlanSlot
+  featuredFocus: FocusTag
   done: boolean
   open: boolean
   onOpen: () => void
   onToggle: () => void
+  onSwap: () => void
 }) {
   const meta = DOMAIN_META[slot.domain]
-  const hasPriority = slot.focus.some((f) => (PRIORITY_FOCUS as string[]).includes(f))
+  const isFeatured = slot.focus.includes(featuredFocus)
   const coach = slot.coach
 
   return (
@@ -222,10 +277,11 @@ function ActivityCard({
         <div className="card-body">
           <h3 className="card-title">{slot.title}</h3>
           <div className="card-meta">
+            <span className="chip time-chip">{slot.timeLabel}</span>
             <span className="chip" style={{ color: meta.color }}>
               {meta.name} · {slot.minutes} 分钟
             </span>
-            {hasPriority && <span className="chip focus">重点</span>}
+            {isFeatured && <span className="chip focus">今日主打</span>}
             <span className="chip focus">{open ? '收起跟练' : '展开跟练'}</span>
           </div>
           {!open && coach && <p className="card-guide">准备：{coach.setup}</p>}
@@ -265,15 +321,20 @@ function ActivityCard({
         <div className="card-tip">
           {open ? '照着「跟练」说和做即可' : '点标题展开完整跟练话术'}
         </div>
-        <button
-          type="button"
-          className={`check${done ? ' on' : ''}`}
-          aria-pressed={done}
-          aria-label={done ? '取消打卡' : '完成打卡'}
-          onClick={onToggle}
-        >
-          ✓
-        </button>
+        <div className="card-actions">
+          <button type="button" className="swap-btn" onClick={onSwap} aria-label={`换掉「${slot.title}」`}>
+            🔁 换一个
+          </button>
+          <button
+            type="button"
+            className={`check${done ? ' on' : ''}`}
+            aria-pressed={done}
+            aria-label={done ? '取消打卡' : '完成打卡'}
+            onClick={onToggle}
+          >
+            ✓
+          </button>
+        </div>
       </div>
     </article>
   )

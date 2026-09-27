@@ -16,6 +16,12 @@ Time budget: **weekday 90 min · weekend 300 min**.
 ## Style anchor
 Apple iOS Liquid Glass, **child-loved pink** — frosted rose glass over candy-mist canvas, bubbly orbs. Parent holds the phone; content stays wide-open.
 
+## Logo（玻璃质感小芽）
+- Source of truth: `app/icon.svg`（64×64 viewBox）。同内容拷贝：`public/favicon.svg`、根 `favicon.svg`（三份必须同步改）。
+- 构成：粉色渐变圆角底（`#FF5BA8 → #E11D7A`，rx 15）+ 顶部边缘弧光 + 玻璃高光 + 白色 S 形茎 + 双色渐变双叶（深绿 `#2FA872` → 浅绿 `#8FE6B8`/`#A6EFC9`）+ 深粉土壤弧 + 星光/圆点点缀。16px 下依然可读。
+- 位图全家桶由 `node scripts/generate-icons.mjs`（sharp，devDependency）从 SVG 重新生成：favicon-16/32、icon-192/512、apple-touch-icon（方形，Apple 自行圆角）、`app/icon.png`、`public/og.png`（1200×630 分享卡）。改 logo 后跑一次并提交产物。
+- App 内顶栏通过 `app/components/Logo.tsx` 内联渲染同一标志（避免资产路径问题）；根 `index.html` 的头部用 `LOGO` 常量内联同款，两处需保持一致。
+
 ## Palette
 | Token | Hex | Use |
 |-------|-----|-----|
@@ -41,8 +47,8 @@ Apple iOS Liquid Glass, **child-loved pink** — frosted rose glass over candy-m
 
 ## Layout
 - 390×844 mobile-first, 16px gutters
-- Floating pink glass header → time ribbon → activity stack → tab bar
-- Weekday 3–4 cards + 自选角; weekend 6–8 + 自选角
+- Floating pink glass header（logo + brand + 年龄徽章 + 本周入口）→ time ribbon → activity stack → tab bar
+- Weekday 6–7 cards + 自选角; weekend 13–16 + 自选角（由 `lib/plan.ts` 按预算填充）
 
 ## Signature
 1. Pink **time ribbon** (domains × minutes)

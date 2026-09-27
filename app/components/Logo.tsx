@@ -1,0 +1,62 @@
+/** 品牌标志：与 app/icon.svg 同源的玻璃质感小芽（内联避免资产路径问题） */
+export default function Logo({ size = 32 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden className="brand-logo">
+      <defs>
+        <linearGradient id="logo-tile" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#FF5BA8" />
+          <stop offset="1" stopColor="#E11D7A" />
+        </linearGradient>
+        <linearGradient id="logo-leafL" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#8FE6B8" />
+          <stop offset="1" stopColor="#2FA872" />
+        </linearGradient>
+        <linearGradient id="logo-leafR" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#A6EFC9" />
+          <stop offset="1" stopColor="#46C78E" />
+        </linearGradient>
+        <radialGradient id="logo-glow" cx="0.5" cy="0.42" r="0.6">
+          <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.16" />
+          <stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#logo-tile)" />
+      <rect width="64" height="64" rx="15" fill="url(#logo-glow)" />
+      <path
+        d="M5 15 C 5 9.4 9.4 5 16 5 H 48 C 54.6 5 59 9.4 59 15 V 15.8 C 40 25.5 24 25.5 5 15.8 Z"
+        fill="#FFFFFF"
+        opacity="0.09"
+      />
+      <path
+        d="M9 13.5 C 13.5 7.8 22 5.2 32 5.2 C 42 5.2 50.5 7.8 55 13.5"
+        fill="none"
+        stroke="#FFFFFF"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <path d="M17 50.5 C 23 46.2 41 46.2 47 50.5 C 41 53.4 23 53.4 17 50.5 Z" fill="#A8125A" opacity="0.5" />
+      <path
+        d="M32.8 46.5 C 31.6 40.5 31.1 34 31.8 27"
+        fill="none"
+        stroke="#FFFFFF"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.95"
+      />
+      <path d="M31.8 27 C 28 21.5 20 19.5 14.5 21.5 C 17.5 28.5 26 31.5 31.8 27 Z" fill="url(#logo-leafL)" />
+      <path d="M31.8 27 C 34.5 21.5 41.5 16.5 49 17.5 C 48 25 39.5 30.5 31.8 27 Z" fill="url(#logo-leafR)" />
+      <path
+        d="M18.5 22.5 C 22 20.8 26.5 20.6 29.5 22.4"
+        fill="none"
+        stroke="#FFFFFF"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <path d="M49 6.5 L50.1 9.4 L53 10.5 L50.1 11.6 L49 14.5 L47.9 11.6 L45 10.5 L47.9 9.4 Z" fill="#FFFFFF" opacity="0.9" />
+      <circle cx="13.5" cy="11" r="1.7" fill="#FFFFFF" opacity="0.7" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.5" fill="none" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.25" />
+    </svg>
+  )
+}

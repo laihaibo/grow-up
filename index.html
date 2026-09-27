@@ -24,6 +24,8 @@
     .glass-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;margin-bottom:14px;position:sticky;top:12px;z-index:20}
     .brand-kicker{font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--pink)}
     .brand-title{font-size:22px;font-weight:700;margin:4px 0 0;letter-spacing:-.02em}
+    .brand-row{display:flex;align-items:center;gap:10px}
+    .brand-logo{border-radius:10px;box-shadow:0 4px 12px rgba(225,29,122,.28);display:block;flex-shrink:0}
     .age-badge{text-align:right;flex-shrink:0}
     .age-badge .days{display:inline-flex;padding:8px 12px;border-radius:999px;background:linear-gradient(135deg,rgba(255,45,149,.16),rgba(244,114,182,.22));border:1px solid rgba(255,45,149,.2);color:var(--pink-deep);font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12px;font-weight:700}
     .age-badge .meta{margin-top:6px;font-size:12px;color:var(--muted);font-weight:500}
@@ -159,7 +161,7 @@
     {id:'brave-voice-meter',title:'音量勇气表',domain:'language',focus:['speak','social'],minutes:10,steps:['蚊子音/普通/勇敢大声','练：请把书还给我。','讨论各场合用哪档','客厅挑战勇敢大声，家人鼓掌']},
     {id:'brave-trusted-adults',title:'我的安全大人名单',domain:'social',focus:['social','life'],minutes:12,steps:['列出可求助的人','画符号贴固定位置','练：我需要帮助。','约定家里永远站在她这边']},
     {id:'brave-story-talk',title:'故事里的勇敢选择',domain:'language',focus:['listen','social','speak'],minutes:15,steps:['讲被欺负的小故事','停下来问：可以怎么做？','列2种办法：说停/走开/告诉大人','不敢说就和朋友一起去','画“勇敢的自己”']},
-    {id:'brave-power-pose',title:'超人站姿充电',domain:'health',focus:['motor','speak'],minutes:8,steps:['双手叉腰抬头挺胸20秒','深呼吸三次','喊：我可以保护自己！我可以说出来！','上学前当充电']}
+    {id:'brave-power-pose',title:'超人站姿充电',domain:'health',focus:['motor','speak'],minutes:8,steps:['双手叉腰抬头挺胸20秒','深呼吸三次','喊：我可以保护自己！我可以说出来！','上学前当充电']},
   {id:'mix-night-review',title:'睡前三件事回顾',domain:'social',focus:['speak','social'],minutes:8,steps:['今天做了什么好玩的','有没有一次「说出来」','明天最想玩什么','晚安，警长小芽'],tip:'把成长重点放进每日仪式。'},
   {id:'hz-radical-lego',title:'偏旁积木拼字',domain:'language',focus:['hanzi','logic'],minutes:15,steps:['摆出偏旁当左半边','摆右半边拼字','拼出江、妈、问','还有谁能和氵做朋友？'],tip:'只玩拼和念，不要求默写。'},
   {id:'hz-market-words',title:'超市价签认字',domain:'language',focus:['hanzi'],minutes:12,steps:['看超市价签','找大、小、多、米、奶','读一遍跟一遍','回家画字卡'],tip:'生活场景比闪卡更牢。'},
@@ -361,9 +363,10 @@
         '<section class="glass page-block"><h3>最近有记录的日子</h3>'+list+'</section>'+
         '<section class="glass page-block"><h3>给家长的一句话</h3><p>目标不是学了多少字，而是她更愿意表达、更敢尝试、更会想办法。若她胆小：先共情，再一起练“说停—走开—告诉老师”。她可以文静，也可以大声维护自己——都对。</p></section>';
     }
+    const LOGO='<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 64 64" class="brand-logo" aria-hidden="true"><defs><linearGradient id="s-tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF5BA8"/><stop offset="1" stop-color="#E11D7A"/></linearGradient><linearGradient id="s-leafL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FE6B8"/><stop offset="1" stop-color="#2FA872"/></linearGradient><linearGradient id="s-leafR" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A6EFC9"/><stop offset="1" stop-color="#46C78E"/></linearGradient><radialGradient id="s-glow" cx="0.5" cy="0.42" r="0.6"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="15" fill="url(#s-tile)"/><rect width="64" height="64" rx="15" fill="url(#s-glow)"/><path d="M5 15 C 5 9.4 9.4 5 16 5 H 48 C 54.6 5 59 9.4 59 15 V 15.8 C 40 25.5 24 25.5 5 15.8 Z" fill="#FFFFFF" opacity="0.09"/><path d="M9 13.5 C 13.5 7.8 22 5.2 32 5.2 C 42 5.2 50.5 7.8 55 13.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity="0.5"/><path d="M17 50.5 C 23 46.2 41 46.2 47 50.5 C 41 53.4 23 53.4 17 50.5 Z" fill="#A8125A" opacity="0.5"/><path d="M32.8 46.5 C 31.6 40.5 31.1 34 31.8 27" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/><path d="M31.8 27 C 28 21.5 20 19.5 14.5 21.5 C 17.5 28.5 26 31.5 31.8 27 Z" fill="url(#s-leafL)"/><path d="M31.8 27 C 34.5 21.5 41.5 16.5 49 17.5 C 48 25 39.5 30.5 31.8 27 Z" fill="url(#s-leafR)"/><path d="M18.5 22.5 C 22 20.8 26.5 20.6 29.5 22.4" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" opacity="0.5"/><path d="M49 6.5 L50.1 9.4 L53 10.5 L50.1 11.6 L49 14.5 L47.9 11.6 L45 10.5 L47.9 9.4 Z" fill="#FFFFFF" opacity="0.9"/><circle cx="13.5" cy="11" r="1.7" fill="#FFFFFF" opacity="0.7"/><rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.5" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.25"/></svg>';
     const tabs=[['today','今日','🌸'],['domains','领域','🧩'],['stories','故事','👮‍♀️'],['progress','成长','💗']];
     const nav='<nav class="glass tabbar">'+tabs.map(function(t){return '<button type="button" class="tab'+(tab===t[0]?' active':'')+'" data-tab="'+t[0]+'"><span class="ico">'+t[2]+'</span>'+t[1]+'</button>'}).join('')+'</nav>';
-    document.getElementById('app').innerHTML='<header class="glass glass-header"><div class="brand"><div class="brand-kicker">3–6 岁成长指南</div><h1 class="brand-title">小芽成长</h1></div><div class="age-badge"><div class="days">'+(age.turnedFour?'已满 4 岁 🎂':'距 4 岁 · '+age.daysToFour+' 天')+'</div><div class="meta">'+age.displayAge+'</div></div></header><main>'+main+'</main>'+nav;
+    document.getElementById('app').innerHTML='<header class="glass glass-header"><div class="brand"><div class="brand-row">'+LOGO+'<div><div class="brand-kicker">3–6 岁成长指南</div><h1 class="brand-title">小芽成长</h1></div></div></div><div class="age-badge"><div class="days">'+(age.turnedFour?'已满 4 岁 🎂':'距 4 岁 · '+age.daysToFour+' 天')+'</div><div class="meta">'+age.displayAge+'</div></div></header><main>'+main+'</main>'+nav;
   }
   document.getElementById('app').addEventListener('click',function(e){
     const t=e.target;

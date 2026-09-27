@@ -1,10 +1,27 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { buildWeekPreview } from '@/lib/plan'
 
 export default function WeekPage() {
-  const week = useMemo(() => buildWeekPreview(new Date()), [])
+  const [today] = useState(() => new Date())
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <main>
+        <div className="page-loading" role="status">
+          正在生成本周计划…
+        </div>
+      </main>
+    )
+  }
+
+  const week = buildWeekPreview(today)
 
   return (
     <main>
@@ -42,7 +59,7 @@ export default function WeekPage() {
             )}
           </div>
           <div className="week-titles">
-            {d.slots.map((s) => s.title).join(' · ')}
+            {d.slots.map((s) => `${s.timeLabel}·${s.title}`).join(' · ')}
             <div style={{ marginTop: 4, color: 'var(--pink-deep)', fontWeight: 600 }}>🫧 自选：{d.choice.label}</div>
           </div>
         </section>

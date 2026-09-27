@@ -7,7 +7,14 @@ out/
 .env*
 .vercel
 next-env.d.ts
-_ver.txt
-_git*.txt
-nodev.txt
-nodeerr.txt
+
+# 命令行草稿输出与临时校验目录（见 AGENTS.md：根目录 _*.txt 是 scratch）
+_*.txt
+_*.cjs
+_*.err
+_*.log
+.tmp-verify/
+.verify-plan-tmp/
+.logo-preview-*
+.og-src.svg
+tsconfig.tsbuildinfo

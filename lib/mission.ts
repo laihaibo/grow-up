@@ -1,7 +1,6 @@
 /** 防诱拐演练任务：固定日历 + 背诵原文 + 逐日映射 */
 
-export const CHILD_NAME = '赖潇语'
-export const CLASS_NAME = '小一班'
+import { CHILD_NAME, CLASS_NAME } from './child'
 
 /** 演习日：2026-09-23 周三 */
 export const DRILL_DATE = new Date(2026, 8, 23)
@@ -145,24 +144,4 @@ export function daysUntilDrill(d = new Date()) {
   const a = new Date(d.getFullYear(), d.getMonth(), d.getDate())
   const b = new Date(DRILL_DATE.getFullYear(), DRILL_DATE.getMonth(), DRILL_DATE.getDate())
   return Math.round((b.getTime() - a.getTime()) / 86400000)
-}
-
-/** 窗口内四日任务打卡统计；doneIds 需来自 storage */
-export function missionProgress(doneIds: string[]) {
-  const ids = MISSION_DAYS.map((d) => d.activityId)
-  const done = ids.filter((id) => doneIds.includes(id))
-  return {
-    doneIds: done,
-    total: ids.length,
-    pct: Math.round((done.length / ids.length) * 100),
-  }
-}
-
-export function collectMissionDoneIds(store: Record<string, string[]>) {
-  const ids: string[] = []
-  for (const d of MISSION_DAYS) {
-    const list = store[d.dateKey] || []
-    if (list.includes(d.activityId)) ids.push(d.activityId)
-  }
-  return ids
 }

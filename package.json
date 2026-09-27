@@ -8,7 +8,8 @@
     "build": "next build",
     "preview": "next start",
     "export": "next build",
-    "prepare:phone": "node scripts/prepare-phone.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "verify:plan": "node scripts/verify-plan.mjs"
   },
   "dependencies": {
     "next": "^15.1.6",
@@ -19,6 +20,7 @@
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.4",
     "@types/react-dom": "^19.0.2",
+    "sharp": "^0.35.4",
     "typescript": "^5.7.3"
   },
   "engines": {

@@ -3,9 +3,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { DOMAIN_META } from '@/lib/activities'
 import { coachFor } from '@/lib/coach'
+import { CHILD_NAME, CLASS_NAME } from '@/lib/child'
 import {
-  CHILD_NAME,
-  CLASS_NAME,
   DRILL_DATE,
   MISSION_DAYS,
   SPEECH,
@@ -27,9 +26,11 @@ export default function MissionPage() {
   const dLeft = daysUntilDrill(today)
   const [progress, setProgress] = useState<ProgressStore>({})
   const [openId, setOpenId] = useState<string | null>(todayMission?.activityId ?? null)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setProgress(loadProgress())
+    setMounted(true)
   }, [])
 
   const doneCount = MISSION_DAYS.filter((d) => isDone(progress, d.dateKey, d.activityId)).length
@@ -37,6 +38,16 @@ export default function MissionPage() {
 
   function onToggle(dayKey: string, activityId: string) {
     setProgress(toggleActivity(dayKey, activityId))
+  }
+
+  if (!mounted) {
+    return (
+      <main>
+        <div className="page-loading" role="status">
+          正在载入演练任务…
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -182,7 +193,7 @@ export default function MissionPage() {
               )}
 
               <div className="card-foot">
-                <div className="card-tip">任务 id：{day.activityId}</div>
+                <div className="card-tip">{open ? '照着「跟练」说和做即可' : '点标题展开跟练话术'}</div>
                 <button
                   type="button"
                   className={`check${done ? ' on' : ''}`}

@@ -1,9 +1,11 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { ageInfo } from '@/lib/activities'
+import Logo from './Logo'
 
 const tabs = [
   { href: '/', label: '今日', ico: '🌸' },
@@ -24,21 +26,38 @@ function normalize(path: string) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
-  const age = ageInfo(new Date())
+  const [mounted, setMounted] = useState(false)
   const current = normalize(pathname || '/')
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // 年龄徽章依赖当天日期，挂载后再渲染，避免静态导出固化构建日快照
+  const age = ageInfo(new Date())
 
   return (
     <div className="app">
       <header className="glass glass-header">
         <div className="brand">
-          <div className="brand-kicker">3–6 岁成长指南</div>
-          <h1 className="brand-title">小芽成长</h1>
+          <div className="brand-row">
+            <Logo size={30} />
+            <div>
+              <div className="brand-kicker">3–6 岁成长指南</div>
+              <h1 className="brand-title">小芽成长</h1>
+            </div>
+          </div>
         </div>
         <div className="age-badge">
-          <div className="days">
-            {age.turnedFour ? '已满 4 岁 🎂' : `距 4 岁 · ${age.daysToFour} 天`}
+          <div className="badge-row">
+            {mounted && (
+              <div className="days">{age.turnedFour ? '已满 4 岁 🎂' : `距 4 岁 · ${age.daysToFour} 天`}</div>
+            )}
+            <Link href="/week/" className="week-link">
+              📅 本周
+            </Link>
           </div>
-          <div className="meta">{age.displayAge}</div>
+          {mounted && <div className="meta">{age.displayAge}</div>}
         </div>
       </header>
 

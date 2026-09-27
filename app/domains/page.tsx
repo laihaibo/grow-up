@@ -1,6 +1,6 @@
-import { DOMAIN_META, PRIORITY_FOCUS, FOCUS_META } from '@/lib/activities'
+import { DOMAIN_META, PRIORITY_FOCUS, FOCUS_META, type Domain, type FocusTag } from '@/lib/activities'
 
-const guidePoints: Record<string, string[]> = {
+const guidePoints: Record<Domain, string[]> = {
   health: [
     '3–4 岁：能沿地面直线或低矮物体行走；双脚交替上下楼梯；能用勺子吃饭',
     '4–4.5 岁：能快跑 20 米左右；能单脚站立 5 秒左右；尝试自己穿脱简单衣物',
@@ -28,7 +28,7 @@ const guidePoints: Record<string, string[]> = {
   ],
 }
 
-const priorityNotes: Record<string, string> = {
+const priorityNotes: Partial<Record<FocusTag, string>> = {
   hanzi: '生活场景认字：包装、门牌、绘本；玩卡片与寻宝，不要求书写量',
   english: '听说先行：儿歌、颜色、动物、数字；允许沉默观察期',
   math: '手口一致点数、比较多少长短、玩规律与形状',
