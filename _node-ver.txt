@@ -1,1 +1,0 @@
-v22.23.2 C:\nvm4w\nodejs\node.exe
